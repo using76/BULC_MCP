@@ -1,0 +1,200 @@
+{
+  "manifest_version": "0.3",
+  "name": "bulc-building-designer",
+  "version": "1.0.0",
+  "display_name": "BULC Building Designer",
+  "description": "AI-powered building design automation for BULC fire simulation software. Create rooms, walls, and multi-story buildings with natural language.",
+  "long_description": "BULC Building Designer connects Claude Desktop to the BULC fire simulation software, enabling natural language building design. Simply describe what you want - 'Create a 5m x 4m living room' or 'Add a bedroom next to the kitchen' - and Claude will automatically create the building elements.\n\nFeatures:\n- Natural language room and wall creation\n- Multi-story building support\n- Spatial awareness (relative positioning)\n- Full undo/redo support\n- Works in English and Korean",
+  "author": {
+    "name": "Meteor Simulation Inc.",
+    "email": "support@meteor-simulation.com",
+    "url": "https://meteor-simulation.com"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "build/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/build/index.js"],
+      "env": {
+        "BULC_PORT": "19840"
+      }
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": ["darwin", "win32"],
+    "runtimes": {
+      "node": ">=16.0.0"
+    }
+  },
+  "tools": [
+    {
+      "name": "bulc_get_spatial_context",
+      "description": "Get current layout of all rooms, walls, and levels with exact coordinates",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "bulc_get_home_info",
+      "description": "Get project information including file path, room count, wall count",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "bulc_list_rooms",
+      "description": "List all rooms with IDs, names, and dimensions",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "bulc_list_walls",
+      "description": "List all walls with IDs, coordinates, and properties",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "bulc_list_levels",
+      "description": "List all floor levels with names and elevations",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "bulc_create_room",
+      "description": "Create a rectangular room at specified position",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_create_room_polygon",
+      "description": "Create a polygon-shaped room with custom vertices",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_create_wall",
+      "description": "Create a wall segment between two points",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_create_walls_rectangle",
+      "description": "Create 4 connected walls forming a rectangular enclosure",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_create_level",
+      "description": "Create a new floor level",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_modify_room",
+      "description": "Modify properties of an existing room",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_modify_wall",
+      "description": "Modify properties of an existing wall",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_delete_room",
+      "description": "Delete a room by ID",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_delete_wall",
+      "description": "Delete a wall by ID",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_set_current_level",
+      "description": "Set the active floor level for editing",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "bulc_undo",
+      "description": "Undo the last operation",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_redo",
+      "description": "Redo the last undone operation",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "bulc_save",
+      "description": "Save the current project",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    }
+  ],
+  "privacy_policies": [
+    "https://github.com/meteor-simulation/bulc-mcp-server/blob/main/PRIVACY_POLICY.md"
+  ],
+  "icon": "icon.png",
+  "keywords": [
+    "building",
+    "architecture",
+    "CAD",
+    "fire simulation",
+    "FDS",
+    "design",
+    "floor plan",
+    "construction",
+    "BIM"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meteor-simulation/bulc-mcp-server"
+  },
+  "homepage": "https://meteor-simulation.com/bulc",
+  "documentation": "https://github.com/meteor-simulation/bulc-mcp-server#readme",
+  "support": "https://github.com/meteor-simulation/bulc-mcp-server/issues"
+}

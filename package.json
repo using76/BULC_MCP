@@ -1,0 +1,57 @@
+{
+  "name": "bulc-building-designer",
+  "version": "1.0.0",
+  "description": "AI-powered building design automation for Claude Desktop - MCP server for BULC fire simulation software",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "tsc && node build/index.js",
+    "clean": "rm -rf build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "claude",
+    "building",
+    "architecture",
+    "cad",
+    "fire-simulation",
+    "fds",
+    "sweethome3d",
+    "ai",
+    "automation"
+  ],
+  "author": {
+    "name": "Meteor Simulation Inc.",
+    "email": "support@meteor-simulation.com",
+    "url": "https://meteor-simulation.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meteor-simulation/bulc-mcp-server.git"
+  },
+  "homepage": "https://github.com/meteor-simulation/bulc-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/meteor-simulation/bulc-mcp-server/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE",
+    "PRIVACY_POLICY.md"
+  ]
+}
