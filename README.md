@@ -36,7 +36,7 @@ BULC Building Designer is a Model Context Protocol (MCP) server that connects Cl
 
 ### Prerequisites
 
-1. **BULC Application**: Download from [Meteor Simulation]([https://www.msimul.com](https://www.msimul.com/)
+1. **BULC Application**: Download from [Meteor Simulation]([https://www.msimul.com]
 2. **Node.js**: Version 16.0.0 or higher
 3. **Claude Desktop**: Latest version
 
@@ -481,6 +481,7 @@ BULC (Building Utility for Life-safety Calculations)는 SweetHome3D 기반의 �
 <p align="center">
   건축가, 소방 안전 엔지니어, 건물 설계자를 위해 ❤️로 제작
 </p>
+
 
 
 
