@@ -1,17 +1,21 @@
 {
   "name": "bulc-mcp-server",
-  "version": "1.0.0",
-  "description": "MCP server for BULC - Fire Dynamics Simulator with SweetHome3D",
+  "version": "3.0.0",
+  "description": "MCP server for BULC — AI control of the BULC fire & evacuation simulator (geometry, mesh, settings, output, fire, detectors, sprinkler, HVAC, EVAC, results)",
   "type": "module",
   "main": "build/index.js",
+  "bin": {
+    "bulc-mcp-server": "build/index.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-snapshot.mjs",
     "start": "node build/index.js",
-    "dev": "tsc && node build/index.js"
+    "dev": "npm run build && node build/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node test/smoke.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "zod": "^3.22.0"
+    "@modelcontextprotocol/sdk": "^1.12.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -19,5 +23,11 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/using76/BULC_MCP"
+  },
+  "keywords": ["mcp", "bulc", "fds", "fire simulation", "evacuation", "cfd", "building"]
 }

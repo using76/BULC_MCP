@@ -1,0 +1,6200 @@
+{
+  "generatedFrom": "BULC GUI ai-tools registry (electron/services/ai-tools)",
+  "toolCount": 197,
+  "tools": [
+    {
+      "name": "add_obstacle",
+      "description": "Add an obstacle (solid block) to the FDS model. XB=[x1,x2,y1,y2,z1,z2] in metres.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Bounding box [x1,x2,y1,y2,z1,z2]"
+          },
+          "surf_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Surface IDs for faces"
+          }
+        },
+        "required": [
+          "id",
+          "xb"
+        ]
+      }
+    },
+    {
+      "name": "remove_obstacle",
+      "description": "Remove an obstacle by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Obstacle ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "update_obstacle",
+      "description": "Update an existing obstacle by ID. Provide only fields to change.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Obstacle ID to update"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "surf_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "set_fds_properties",
+      "description": "Update an obstacle's Runtime FDS Properties. Merge ANY fds_override fields and/or set is_fire_source/hrrpua/surf_ids. fds_override examples — fire: hrrpua_override, tmp_front, ramp_points, fire_area, fire_faces, ext_coeff; fuel/REAC: fuel_type, reac_co_yield, reac_soot_yield, reac_hcn_yield, reac_radiative_fraction; heat detector: activation_temp, rti, initial_temp; smoke: alpha_e, beta_e, alpha_c, beta_c; thermocouple: bead_diameter, emissivity, tc_density, specific_heat; sprinkler: spr_temp, spr_rti, c_factor, flow_rate, offset, jet_velocity, spray_angle, particle_diameter, monodisperse, spr_activation_time, spr_orientation; HVAC: hvac_direction, volume_flow_rate, temperature, velocity, fan_curve, face_surfs, ramp_up_time. Read current values first with get_object_properties.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Obstacle ID"
+          },
+          "is_fire_source": {
+            "type": "boolean"
+          },
+          "hrrpua": {
+            "type": "number",
+            "description": "kW/m²"
+          },
+          "surf_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fds_override": {
+            "type": "object",
+            "description": "fds_override fields to merge (any of the documented keys).",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_hole",
+      "description": "Add a hole (opening in an obstacle) to the FDS model. XB defines the hole volume.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Hole bounding box [x1,x2,y1,y2,z1,z2]"
+          }
+        },
+        "required": [
+          "id",
+          "xb"
+        ]
+      }
+    },
+    {
+      "name": "remove_hole",
+      "description": "Remove a hole by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Hole ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "update_hole",
+      "description": "Update an existing hole by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Hole ID to update"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_wall",
+      "description": "Convenience tool: add a wall by specifying start point, end point, height, and thickness. Automatically calculates the OBST bounding box. Points are [x,y] on the floor plane.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique wall identifier"
+          },
+          "start": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Start point [x,y]"
+          },
+          "end": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "End point [x,y]"
+          },
+          "height": {
+            "type": "number",
+            "description": "Wall height in metres (default 3.0)"
+          },
+          "thickness": {
+            "type": "number",
+            "description": "Wall thickness in metres (default 0.2)"
+          },
+          "z_base": {
+            "type": "number",
+            "description": "Base Z coordinate (default 0)"
+          },
+          "surf_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "end"
+        ]
+      }
+    },
+    {
+      "name": "add_floor",
+      "description": "Convenience tool: add a floor slab. Specify x/y range and optional thickness.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique floor identifier"
+          },
+          "x_min": {
+            "type": "number"
+          },
+          "x_max": {
+            "type": "number"
+          },
+          "y_min": {
+            "type": "number"
+          },
+          "y_max": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number",
+            "description": "Floor top Z level (default 0)"
+          },
+          "thickness": {
+            "type": "number",
+            "description": "Floor thickness (default 0.2)"
+          },
+          "surf_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "x_min",
+          "x_max",
+          "y_min",
+          "y_max"
+        ]
+      }
+    },
+    {
+      "name": "add_door",
+      "description": "Convenience tool: add a door opening in a wall. Specify the wall obstacle ID and door position/size. Creates a HOLE that cuts through the wall.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Door (hole) identifier"
+          },
+          "wall_id": {
+            "type": "string",
+            "description": "ID of the wall obstacle to cut"
+          },
+          "position": {
+            "type": "number",
+            "description": "Position along the wall as fraction 0-1 (default 0.5 = center)"
+          },
+          "width": {
+            "type": "number",
+            "description": "Door width in metres (default 0.9)"
+          },
+          "height": {
+            "type": "number",
+            "description": "Door height in metres (default 2.1)"
+          }
+        },
+        "required": [
+          "id",
+          "wall_id"
+        ]
+      }
+    },
+    {
+      "name": "add_window",
+      "description": "Convenience tool: add a window opening in a wall. Similar to add_door but with sill height.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Window (hole) identifier"
+          },
+          "wall_id": {
+            "type": "string",
+            "description": "ID of the wall obstacle to cut"
+          },
+          "position": {
+            "type": "number",
+            "description": "Position along the wall 0-1 (default 0.5)"
+          },
+          "width": {
+            "type": "number",
+            "description": "Window width (default 1.2m)"
+          },
+          "height": {
+            "type": "number",
+            "description": "Window height (default 1.2m)"
+          },
+          "sill_height": {
+            "type": "number",
+            "description": "Sill height from floor (default 0.9m)"
+          }
+        },
+        "required": [
+          "id",
+          "wall_id"
+        ]
+      }
+    },
+    {
+      "name": "transform_obstacle",
+      "description": "Move / resize / rotate an existing obstacle (the 3D gizmo + property-panel SX/SY/SZ of the GUI). move = relative offset [dx,dy,dz] (m); place_at = absolute target point for `anchor` (default the XB centre); scale = absolute per-axis scale factors that stretch XB about its centre and rescale furniture voxels; rotation = [rx,ry,rz] degrees (kept as GUI metadata — &OBST itself stays axis-aligned, so a rotated furniture item is exported through its voxels). Combine as many as you need in one call.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Obstacle ID (see list_obstacles)"
+          },
+          "move": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Relative offset [dx,dy,dz] in metres"
+          },
+          "place_at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Absolute target point [x,y,z] for `anchor`"
+          },
+          "anchor": {
+            "type": "string",
+            "enum": [
+              "center",
+              "min",
+              "base"
+            ],
+            "description": "place_at reference: 'center' (default), 'min' (XB min corner), 'base' (XY centre at z_min)"
+          },
+          "scale": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Absolute scale factors [sx,sy,sz] (1 = unchanged)"
+          },
+          "rotation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Rotation [rx,ry,rz] in degrees"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_geoms",
+      "description": "List the &GEOM (triangulated cut-cell geometry) entries in the deck with triangle count, SURF_ID and bounding box.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "remove_geom",
+      "description": "Remove a &GEOM entry by ID (see list_geoms).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "GEOM ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_fire",
+      "description": "Add a fire source. HRRPUA = Heat Release Rate Per Unit Area (kW/m²). XB defines location. For a time-varying fire, pass ramp_points (an explicit HRR fraction curve) OR growth (an NFPA t-squared growth curve) — both auto-create a RAMP and link it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hrrpua": {
+            "type": "number",
+            "description": "Peak heat release rate per unit area (kW/m²)"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Fire location [x1,x2,y1,y2,z1,z2]"
+          },
+          "ramp_id": {
+            "type": "string",
+            "description": "Optional explicit RAMP ID. If omitted and a curve is given, one is auto-generated."
+          },
+          "tmp_front": {
+            "type": "number",
+            "description": "Front temperature in K (default 300)"
+          },
+          "ramp_points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "Time-varying HRR curve as [[time_s, fraction], ...] where fraction is 0–1 of HRRPUA. Auto-creates a RAMP."
+          },
+          "growth": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "medium",
+              "fast",
+              "ultrafast"
+            ],
+            "description": "NFPA t-squared fire growth preset. Auto-generates a RAMP rising as (t/t_peak)^2 to full HRRPUA."
+          },
+          "time_to_peak": {
+            "type": "number",
+            "description": "Seconds to reach full HRRPUA when using growth (defaults by preset: slow 600, medium 300, fast 150, ultrafast 75)."
+          }
+        },
+        "required": [
+          "hrrpua",
+          "xb"
+        ]
+      }
+    },
+    {
+      "name": "update_fire",
+      "description": "Update an existing fire source by index (0-based).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "Fire index (0-based)"
+          },
+          "hrrpua": {
+            "type": "number"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "ramp_id": {
+            "type": "string"
+          },
+          "tmp_front": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "index"
+        ]
+      }
+    },
+    {
+      "name": "remove_fire",
+      "description": "Remove a fire source by index (0-based).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "Fire index (0-based)"
+          }
+        },
+        "required": [
+          "index"
+        ]
+      }
+    },
+    {
+      "name": "update_reaction",
+      "description": "Update the combustion reaction parameters.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fuel": {
+            "type": "string",
+            "description": "Fuel name (e.g. PROPANE, METHANE)"
+          },
+          "co_yield": {
+            "type": "number"
+          },
+          "soot_yield": {
+            "type": "number"
+          },
+          "hcn_yield": {
+            "type": "number"
+          },
+          "radiative_fraction": {
+            "type": "number"
+          },
+          "heat_of_combustion": {
+            "type": "number",
+            "description": "kJ/kg"
+          },
+          "c": {
+            "type": "number",
+            "description": "Carbon atoms"
+          },
+          "h": {
+            "type": "number",
+            "description": "Hydrogen atoms"
+          },
+          "o": {
+            "type": "number",
+            "description": "Oxygen atoms"
+          },
+          "n": {
+            "type": "number",
+            "description": "Nitrogen atoms"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "add_species",
+      "description": "Add a tracked species.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Species name (e.g. CARBON DIOXIDE)"
+          },
+          "formula": {
+            "type": "string",
+            "description": "Chemical formula (e.g. CO2)"
+          }
+        },
+        "required": [
+          "id",
+          "formula"
+        ]
+      }
+    },
+    {
+      "name": "remove_species",
+      "description": "Remove a tracked species by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Species ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_vent",
+      "description": "Add a vent (boundary patch). XB defines the vent surface.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier"
+          },
+          "surf_id": {
+            "type": "string",
+            "description": "Surface ID (e.g. OPEN, INERT, custom)"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Vent surface [x1,x2,y1,y2,z1,z2]"
+          },
+          "mass_flux": {
+            "type": "number",
+            "description": "Mass flux (kg/m²/s)"
+          },
+          "dynamic_pressure": {
+            "type": "number",
+            "description": "Dynamic pressure (Pa)"
+          }
+        },
+        "required": [
+          "id",
+          "surf_id",
+          "xb"
+        ]
+      }
+    },
+    {
+      "name": "remove_vent",
+      "description": "Remove a vent by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Vent ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "update_vent",
+      "description": "Update an existing vent by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Vent ID to update"
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "mass_flux": {
+            "type": "number"
+          },
+          "dynamic_pressure": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "set_open_boundary",
+      "description": "Set a domain face as OPEN (or close it). Face: XMIN, XMAX, YMIN, YMAX, ZMIN, ZMAX.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "face": {
+            "type": "string",
+            "enum": [
+              "XMIN",
+              "XMAX",
+              "YMIN",
+              "YMAX",
+              "ZMIN",
+              "ZMAX"
+            ],
+            "description": "Domain face"
+          },
+          "open": {
+            "type": "boolean",
+            "description": "true = OPEN, false = close"
+          }
+        },
+        "required": [
+          "face",
+          "open"
+        ]
+      }
+    },
+    {
+      "name": "set_all_boundaries_open",
+      "description": "Set all 6 domain faces to OPEN (or selectively by providing a list of faces).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "faces": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "XMIN",
+                "XMAX",
+                "YMIN",
+                "YMAX",
+                "ZMIN",
+                "ZMAX"
+              ]
+            },
+            "description": "Faces to open (default: all 6)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "add_device",
+      "description": "Add a measurement device (&DEVC) with full parameter support: point (xyz) or region (xb) quantities, species, statistics, trip options (setpoint/latch/initial_state/trip_direction), post-processing, aspiration, HVAC and particle quantities. Provide xyz for point quantities or xb for flow/HRR/layer/beam/statistics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique device ID"
+          },
+          "quantity": {
+            "type": "string",
+            "description": "FDS QUANTITY (e.g. TEMPERATURE, VOLUME FRACTION, MASS FLOW +, LAYER HEIGHT, PATH OBSCURATION, HRR, CONTROL)"
+          },
+          "xyz": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Point position [x,y,z] (m)"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Region [x1,x2,y1,y2,z1,z2] — plane for flow, box for HRR/statistics, segment for beam, column for layer"
+          },
+          "spec_id": {
+            "type": "string",
+            "description": "Species: OXYGEN, CARBON DIOXIDE, CARBON MONOXIDE, SOOT, WATER VAPOR, or fuel name"
+          },
+          "ior": {
+            "type": "number",
+            "description": "Wall direction for solid quantities: ±1(X) ±2(Y) ±3(Z)"
+          },
+          "setpoint": {
+            "type": "number",
+            "description": "Trip threshold (device acts as trigger when crossed)"
+          },
+          "latch": {
+            "type": "boolean",
+            "description": "false → re-trips allowed (LATCH=.FALSE.; default true)"
+          },
+          "initial_state": {
+            "type": "boolean",
+            "description": "Start in tripped state (INITIAL_STATE)"
+          },
+          "trip_direction": {
+            "type": "number",
+            "description": "+1 ascending (default) / -1 descending crossing"
+          },
+          "prop_id": {
+            "type": "string",
+            "description": "PROP model reference (detector/sprinkler properties)"
+          },
+          "ctrl_id": {
+            "type": "string",
+            "description": "CTRL reference (required for QUANTITY=CONTROL / CONTROL VALUE)"
+          },
+          "orientation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Sensor direction vector (default 0,0,-1)"
+          },
+          "rotation": {
+            "type": "number",
+            "description": "Rotation about orientation axis (deg)"
+          },
+          "depth": {
+            "type": "number",
+            "description": "DEPTH (m) for INSIDE WALL TEMPERATURE"
+          },
+          "part_id": {
+            "type": "string",
+            "description": "Particle class for MPUV/ADD/AMPUA etc."
+          },
+          "spatial_statistic": {
+            "type": "string",
+            "description": "MEAN, MAX, MIN, VOLUME MEAN/INTEGRAL, MASS MEAN/INTEGRAL, AREA INTEGRAL, SUM, VOLUME, MASS (needs xb)"
+          },
+          "temporal_statistic": {
+            "type": "string",
+            "description": "TIME AVERAGE, RUNNING AVERAGE, MAX, MIN, MAX TIME, MIN TIME, TIME INTEGRAL, RMS, COV, CORRCOEF, SMOOTHED"
+          },
+          "quantity2": {
+            "type": "string",
+            "description": "Second quantity for COV/CORRCOEF"
+          },
+          "quantity_range": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Value gate [min,max] for integral statistics"
+          },
+          "conversion_factor": {
+            "type": "number",
+            "description": "Output = factor*x + addend (default 1)"
+          },
+          "conversion_addend": {
+            "type": "number",
+            "description": "Output = factor*x + addend (default 0)"
+          },
+          "relative": {
+            "type": "boolean",
+            "description": "Subtract first output value"
+          },
+          "absolute_value": {
+            "type": "boolean",
+            "description": "Output |x|"
+          },
+          "smoothing_factor": {
+            "type": "number",
+            "description": "Exponential smoothing 0..1"
+          },
+          "smoothing_time": {
+            "type": "number",
+            "description": "Smoothing time constant (s, overrides factor)"
+          },
+          "output": {
+            "type": "boolean",
+            "description": "false → omit column from devc.csv (control-only device)"
+          },
+          "no_update_devc_id": {
+            "type": "string",
+            "description": "Freeze this output when the referenced device trips"
+          },
+          "points": {
+            "type": "number",
+            "description": ">1 → expand XBP line into N point devices (ID-01..)"
+          },
+          "xbp": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Line endpoints for points>1: [x1,x2,y1,y2,z1,z2]"
+          },
+          "devc_id": {
+            "type": "string",
+            "description": "ASPIRATION unit id (for sampling points)"
+          },
+          "flowrate": {
+            "type": "number",
+            "description": "Aspiration sampling flowrate (>0)"
+          },
+          "bypass_flowrate": {
+            "type": "number",
+            "description": "Aspiration unit bypass flowrate"
+          },
+          "delay": {
+            "type": "number",
+            "description": "Aspiration transport delay (s)"
+          },
+          "duct_id": {
+            "type": "string",
+            "description": "HVAC duct id (DUCT quantities)"
+          },
+          "node_id": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "HVAC node id(s) — 2 for NODE PRESSURE DIFFERENCE"
+          },
+          "pipe_index": {
+            "type": "number",
+            "description": "Sprinkler pipe group (default 1)"
+          }
+        },
+        "required": [
+          "id",
+          "quantity"
+        ]
+      }
+    },
+    {
+      "name": "remove_device",
+      "description": "Remove a single device by ID (or internal uid). With duplicate IDs, removes only the first match.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Device ID (or uid) to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "update_device",
+      "description": "Update an existing device by ID (or internal uid). Any &DEVC field can be changed; only one device is modified even with duplicate IDs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Device ID (or uid) to update"
+          },
+          "quantity": {
+            "type": "string",
+            "description": "FDS QUANTITY (e.g. TEMPERATURE, VOLUME FRACTION, MASS FLOW +, LAYER HEIGHT, PATH OBSCURATION, HRR, CONTROL)"
+          },
+          "xyz": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Point position [x,y,z] (m)"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Region [x1,x2,y1,y2,z1,z2] — plane for flow, box for HRR/statistics, segment for beam, column for layer"
+          },
+          "spec_id": {
+            "type": "string",
+            "description": "Species: OXYGEN, CARBON DIOXIDE, CARBON MONOXIDE, SOOT, WATER VAPOR, or fuel name"
+          },
+          "ior": {
+            "type": "number",
+            "description": "Wall direction for solid quantities: ±1(X) ±2(Y) ±3(Z)"
+          },
+          "setpoint": {
+            "type": "number",
+            "description": "Trip threshold (device acts as trigger when crossed)"
+          },
+          "latch": {
+            "type": "boolean",
+            "description": "false → re-trips allowed (LATCH=.FALSE.; default true)"
+          },
+          "initial_state": {
+            "type": "boolean",
+            "description": "Start in tripped state (INITIAL_STATE)"
+          },
+          "trip_direction": {
+            "type": "number",
+            "description": "+1 ascending (default) / -1 descending crossing"
+          },
+          "prop_id": {
+            "type": "string",
+            "description": "PROP model reference (detector/sprinkler properties)"
+          },
+          "ctrl_id": {
+            "type": "string",
+            "description": "CTRL reference (required for QUANTITY=CONTROL / CONTROL VALUE)"
+          },
+          "orientation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Sensor direction vector (default 0,0,-1)"
+          },
+          "rotation": {
+            "type": "number",
+            "description": "Rotation about orientation axis (deg)"
+          },
+          "depth": {
+            "type": "number",
+            "description": "DEPTH (m) for INSIDE WALL TEMPERATURE"
+          },
+          "part_id": {
+            "type": "string",
+            "description": "Particle class for MPUV/ADD/AMPUA etc."
+          },
+          "spatial_statistic": {
+            "type": "string",
+            "description": "MEAN, MAX, MIN, VOLUME MEAN/INTEGRAL, MASS MEAN/INTEGRAL, AREA INTEGRAL, SUM, VOLUME, MASS (needs xb)"
+          },
+          "temporal_statistic": {
+            "type": "string",
+            "description": "TIME AVERAGE, RUNNING AVERAGE, MAX, MIN, MAX TIME, MIN TIME, TIME INTEGRAL, RMS, COV, CORRCOEF, SMOOTHED"
+          },
+          "quantity2": {
+            "type": "string",
+            "description": "Second quantity for COV/CORRCOEF"
+          },
+          "quantity_range": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Value gate [min,max] for integral statistics"
+          },
+          "conversion_factor": {
+            "type": "number",
+            "description": "Output = factor*x + addend (default 1)"
+          },
+          "conversion_addend": {
+            "type": "number",
+            "description": "Output = factor*x + addend (default 0)"
+          },
+          "relative": {
+            "type": "boolean",
+            "description": "Subtract first output value"
+          },
+          "absolute_value": {
+            "type": "boolean",
+            "description": "Output |x|"
+          },
+          "smoothing_factor": {
+            "type": "number",
+            "description": "Exponential smoothing 0..1"
+          },
+          "smoothing_time": {
+            "type": "number",
+            "description": "Smoothing time constant (s, overrides factor)"
+          },
+          "output": {
+            "type": "boolean",
+            "description": "false → omit column from devc.csv (control-only device)"
+          },
+          "no_update_devc_id": {
+            "type": "string",
+            "description": "Freeze this output when the referenced device trips"
+          },
+          "points": {
+            "type": "number",
+            "description": ">1 → expand XBP line into N point devices (ID-01..)"
+          },
+          "xbp": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Line endpoints for points>1: [x1,x2,y1,y2,z1,z2]"
+          },
+          "devc_id": {
+            "type": "string",
+            "description": "ASPIRATION unit id (for sampling points)"
+          },
+          "flowrate": {
+            "type": "number",
+            "description": "Aspiration sampling flowrate (>0)"
+          },
+          "bypass_flowrate": {
+            "type": "number",
+            "description": "Aspiration unit bypass flowrate"
+          },
+          "delay": {
+            "type": "number",
+            "description": "Aspiration transport delay (s)"
+          },
+          "duct_id": {
+            "type": "string",
+            "description": "HVAC duct id (DUCT quantities)"
+          },
+          "node_id": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "HVAC node id(s) — 2 for NODE PRESSURE DIFFERENCE"
+          },
+          "pipe_index": {
+            "type": "number",
+            "description": "Sprinkler pipe group (default 1)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_sprinkler",
+      "description": "Convenience: add a complete sprinkler setup. Automatically creates DEVC (SPRINKLER LINK TEMPERATURE), PROP definition, and PART class. Just specify position and optional parameters.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Sprinkler base ID (e.g. SPRK_1)"
+          },
+          "xyz": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Position [x,y,z]"
+          },
+          "activation_temperature": {
+            "type": "number",
+            "description": "Activation temp (°C, default 68)"
+          },
+          "rti": {
+            "type": "number",
+            "description": "Response Time Index (default 80)"
+          },
+          "flow_rate": {
+            "type": "number",
+            "description": "Flow rate in L/min (default 75)"
+          },
+          "k_factor": {
+            "type": "number",
+            "description": "K-factor (default 80.6)"
+          },
+          "spray_angle": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Spray angle [min,max] degrees (default [60,80])"
+          },
+          "droplet_diameter": {
+            "type": "number",
+            "description": "Median droplet diameter in μm (default 500)"
+          }
+        },
+        "required": [
+          "id",
+          "xyz"
+        ]
+      }
+    },
+    {
+      "name": "add_nozzle",
+      "description": "Convenience: add a Lagrangian-particle virtual fuel nozzle (e.g. hydrogen TPRD jet release). Automatically creates DEVC (QUANTITY=TIME, SETPOINT=0, ORIENTATION), PROP (MASS_FLOW_RATE / FLOW_RAMP / PARTICLE_VELOCITY / SPRAY_ANGLE / PARTICLES_PER_SECOND), PART (SPEC_ID / DIAMETER / MONODISPERSE / INITIAL_TEMPERATURE), the fuel SPEC (FORMULA + liquid-droplet properties taken from the built-in fuel database) and aligns REAC (FUEL / RADIATIVE_FRACTION / SOOT_YIELD / CO_YIELD) when no reaction is set yet.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Nozzle base ID (e.g. TPRD)"
+          },
+          "xyz": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Nozzle exit position [x,y,z] (m)"
+          },
+          "orientation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Jet direction vector (default [0,0,1] = upward)"
+          },
+          "mass_flow_rate": {
+            "type": "number",
+            "description": "Mass flow rate at t=0 in kg/s (default 0.068)"
+          },
+          "particle_velocity": {
+            "type": "number",
+            "description": "Injection velocity in m/s (default 200)"
+          },
+          "spray_angle": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Cone half-angles [inner,outer] degrees (default [0,5] — narrow jet)"
+          },
+          "particles_per_second": {
+            "type": "number",
+            "description": "Particles inserted per second (default 10000)"
+          },
+          "diameter_um": {
+            "type": "number",
+            "description": "Droplet diameter in μm (default 1000)"
+          },
+          "spec_id": {
+            "type": "string",
+            "description": "Fuel species (default 'HYDROGEN'). Known fuels get FORMULA + liquid properties automatically: HYDROGEN, METHANE, ETHANE, PROPANE, BUTANE, ETHYLENE, PROPYLENE, ACETYLENE, AMMONIA, METHANOL, ETHANOL, PROPANOL, ISOPROPANOL, ACETONE, BENZENE, TOLUENE, N-PENTANE, N-HEXANE, N-HEPTANE, N-OCTANE, ISOOCTANE, N-DECANE, DODECANE."
+          },
+          "initial_temperature": {
+            "type": "number",
+            "description": "Droplet initial temperature in °C (default: the fuel's boiling point −2~3°C, e.g. -255 for hydrogen)"
+          },
+          "flow_ramp_points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "Mass-flow time series [[t,f],...] multiplying MASS_FLOW_RATE (blowdown decay etc.)"
+          }
+        },
+        "required": [
+          "id",
+          "xyz"
+        ]
+      }
+    },
+    {
+      "name": "add_heat_detector",
+      "description": "Convenience: add a heat detector as a small obstacle with FDS override. Generates DEVC+PROP in FDS output.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Detector ID (e.g. HD_1)"
+          },
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Z position (m, default ceiling height)"
+          },
+          "activation_temp": {
+            "type": "number",
+            "description": "Activation temperature (°C, default 57)"
+          },
+          "rti": {
+            "type": "number",
+            "description": "Response Time Index (default 5)"
+          }
+        },
+        "required": [
+          "id",
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "name": "add_smoke_detector",
+      "description": "Convenience: add a smoke detector as a small obstacle with FDS override. Generates DEVC+PROP in FDS output.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Detector ID (e.g. SD_1)"
+          },
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Z position (m, default ceiling height)"
+          },
+          "alpha_e": {
+            "type": "number",
+            "description": "Extinction coefficient alpha (default 1.8)"
+          },
+          "beta_e": {
+            "type": "number",
+            "description": "Extinction coefficient beta (default -1.0)"
+          },
+          "alpha_c": {
+            "type": "number",
+            "description": "Obscuration coefficient alpha (default 1.0)"
+          },
+          "beta_c": {
+            "type": "number",
+            "description": "Obscuration coefficient beta (default -0.8)"
+          }
+        },
+        "required": [
+          "id",
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "name": "add_thermocouple",
+      "description": "Convenience: add a thermocouple as a small obstacle with FDS override. Generates DEVC in FDS output.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Thermocouple ID (e.g. TC_1)"
+          },
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Z position (m)"
+          },
+          "bead_diameter": {
+            "type": "number",
+            "description": "Bead diameter (m, default 0.001)"
+          },
+          "emissivity": {
+            "type": "number",
+            "description": "Emissivity (default 0.9)"
+          }
+        },
+        "required": [
+          "id",
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    },
+    {
+      "name": "add_control",
+      "description": "Add a CTRL control logic element. FUNCTION_TYPE: logic ANY/ALL/NOT/XOR/X_OF_N(N), TIME_DELAY(delay), KILL/RESTART, DEADBAND(setpoint+setpoint2+on_bound), CUSTOM(ramp_id), PID(target_value+gains), math ABS/EXP/LOG/SIN/COS/ASIN/ACOS/ATAN/SUM/SUBTRACT/MULTIPLY/DIVIDE/POWER/MIN/MAX (with setpoint+trip_direction they act as boolean gates). INPUT_ID accepts device IDs, other CTRL IDs, or CONSTANT.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Control ID"
+          },
+          "function_type": {
+            "type": "string",
+            "description": "One of the 25 FUNCTION_TYPEs above"
+          },
+          "input_id": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Input device/control IDs (or CONSTANT)"
+          },
+          "setpoint": {
+            "type": "number",
+            "description": "Gate threshold (DEADBAND: lower bound)"
+          },
+          "setpoint2": {
+            "type": "number",
+            "description": "DEADBAND upper bound"
+          },
+          "delay": {
+            "type": "number",
+            "description": "Activation delay (s)"
+          },
+          "latch": {
+            "type": "boolean",
+            "description": "Allow only one state change (FDS default true; CUSTOM/PID/DEADBAND default false)"
+          },
+          "initial_state": {
+            "type": "boolean",
+            "description": "Start in true state"
+          },
+          "trip_direction": {
+            "type": "number",
+            "description": "+1 ascending (default) / -1 descending"
+          },
+          "on_bound": {
+            "type": "string",
+            "description": "DEADBAND hysteresis direction: 'LOWER' (default) or 'UPPER'"
+          },
+          "target_value": {
+            "type": "number",
+            "description": "PID target"
+          },
+          "proportional_gain": {
+            "type": "number",
+            "description": "PID Kp (default 1)"
+          },
+          "integral_gain": {
+            "type": "number",
+            "description": "PID Ki (default 0)"
+          },
+          "differential_gain": {
+            "type": "number",
+            "description": "PID Kd (default 0)"
+          },
+          "constant": {
+            "type": "number",
+            "description": "Value used when an input is 'CONSTANT'"
+          },
+          "ramp_id": {
+            "type": "string",
+            "description": "CUSTOM transfer-function RAMP id"
+          },
+          "n": {
+            "type": "number",
+            "description": "X_OF_N / XOR threshold count"
+          }
+        },
+        "required": [
+          "id",
+          "function_type",
+          "input_id"
+        ]
+      }
+    },
+    {
+      "name": "update_control",
+      "description": "Update an existing CTRL by ID. Any field of add_control can be changed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Control ID to update"
+          },
+          "function_type": {
+            "type": "string"
+          },
+          "input_id": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "setpoint": {
+            "type": "number"
+          },
+          "setpoint2": {
+            "type": "number"
+          },
+          "delay": {
+            "type": "number"
+          },
+          "latch": {
+            "type": "boolean"
+          },
+          "initial_state": {
+            "type": "boolean"
+          },
+          "trip_direction": {
+            "type": "number"
+          },
+          "on_bound": {
+            "type": "string"
+          },
+          "target_value": {
+            "type": "number"
+          },
+          "proportional_gain": {
+            "type": "number"
+          },
+          "integral_gain": {
+            "type": "number"
+          },
+          "differential_gain": {
+            "type": "number"
+          },
+          "constant": {
+            "type": "number"
+          },
+          "ramp_id": {
+            "type": "string"
+          },
+          "n": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "remove_control",
+      "description": "Remove a CTRL control by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Control ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_prop",
+      "description": "Add a &PROP device model. quantity presets seed standard defaults: 'LINK TEMPERATURE' (heat detector link), 'SPRINKLER LINK TEMPERATURE', 'CHAMBER OBSCURATION' (smoke detector), 'THERMOCOUPLE' (bead). Override any field. Reference from devices via prop_id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "PROP model ID"
+          },
+          "quantity": {
+            "type": "string",
+            "description": "PROP quantity preset (see description)"
+          },
+          "activation_temperature": {
+            "type": "number",
+            "description": "(°C)"
+          },
+          "rti": {
+            "type": "number",
+            "description": "Response Time Index"
+          },
+          "c_factor": {
+            "type": "number",
+            "description": "Conduction factor"
+          },
+          "initial_temperature": {
+            "type": "number",
+            "description": "(°C)"
+          },
+          "flow_rate": {
+            "type": "number",
+            "description": "Sprinkler flow (L/min)"
+          },
+          "k_factor": {
+            "type": "number",
+            "description": "Sprinkler K-factor"
+          },
+          "operating_pressure": {
+            "type": "number",
+            "description": "(bar)"
+          },
+          "spray_angle": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "offset": {
+            "type": "number",
+            "description": "Droplet insertion offset (m)"
+          },
+          "part_id": {
+            "type": "string",
+            "description": "Droplet particle class"
+          },
+          "activation_obscuration": {
+            "type": "number",
+            "description": "Smoke setpoint (%/m)"
+          },
+          "alpha_e": {
+            "type": "number"
+          },
+          "beta_e": {
+            "type": "number"
+          },
+          "alpha_c": {
+            "type": "number"
+          },
+          "beta_c": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number",
+            "description": "Smoke chamber length (m)"
+          },
+          "bead_diameter": {
+            "type": "number"
+          },
+          "bead_emissivity": {
+            "type": "number"
+          },
+          "bead_density": {
+            "type": "number"
+          },
+          "bead_specific_heat": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "quantity"
+        ]
+      }
+    },
+    {
+      "name": "update_prop",
+      "description": "Update an existing &PROP model by ID. Same fields as add_prop.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "PROP model ID to update"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "activation_temperature": {
+            "type": "number"
+          },
+          "rti": {
+            "type": "number"
+          },
+          "c_factor": {
+            "type": "number"
+          },
+          "initial_temperature": {
+            "type": "number"
+          },
+          "flow_rate": {
+            "type": "number"
+          },
+          "k_factor": {
+            "type": "number"
+          },
+          "operating_pressure": {
+            "type": "number"
+          },
+          "spray_angle": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "offset": {
+            "type": "number"
+          },
+          "part_id": {
+            "type": "string"
+          },
+          "activation_obscuration": {
+            "type": "number"
+          },
+          "alpha_e": {
+            "type": "number"
+          },
+          "beta_e": {
+            "type": "number"
+          },
+          "alpha_c": {
+            "type": "number"
+          },
+          "beta_c": {
+            "type": "number"
+          },
+          "length": {
+            "type": "number"
+          },
+          "bead_diameter": {
+            "type": "number"
+          },
+          "bead_emissivity": {
+            "type": "number"
+          },
+          "bead_density": {
+            "type": "number"
+          },
+          "bead_specific_heat": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "remove_prop",
+      "description": "Remove a &PROP model by ID. Devices referencing it fall back to solver defaults.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "PROP model ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "set_mesh_cell_size",
+      "description": "Set a uniform cell size (m); NI/NJ/NK are computed from the current domain extents. ⚠ Resets any multi-mesh deck to a single mesh. Use set_meshes / auto_multimesh to keep or build a multi-mesh deck.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cell_size": {
+            "type": "number",
+            "description": "Target cell size (m), e.g. 0.1"
+          }
+        },
+        "required": [
+          "cell_size"
+        ]
+      }
+    },
+    {
+      "name": "auto_fit_mesh",
+      "description": "Auto-fit the mesh domain to the bounding box of all obstacles plus margin; recomputes NI/NJ/NK to keep the current cell size. ⚠ Resets any multi-mesh deck to a single mesh. Use set_meshes / auto_multimesh to keep or build a multi-mesh deck.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "margin_xy": {
+            "type": "number",
+            "description": "XY margin (m), default 0.5"
+          },
+          "margin_z": {
+            "type": "number",
+            "description": "Z margin (m), default 0"
+          }
+        }
+      }
+    },
+    {
+      "name": "set_run_options",
+      "description": "Set simulation RUN options (RUN dialog): solver type (gpu / gpu_cutcell = octree cut-cell engine (beta), runs on the grid from the Mesh dialog cut-cell tab / cpu_openmp), CPU thread count, FDS output path.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "solver_type": {
+            "type": "string",
+            "enum": [
+              "gpu",
+              "gpu_cutcell",
+              "cpu_openmp"
+            ]
+          },
+          "cpu_threads": {
+            "type": "number"
+          },
+          "fds_output_path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "set_mesh",
+      "description": "Set the computational mesh resolution and domain extents (a single &MESH). ⚠ Resets any multi-mesh deck to a single mesh. Use set_meshes / auto_multimesh to keep or build a multi-mesh deck.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "ni": {
+            "type": "number",
+            "description": "Number of cells in X direction"
+          },
+          "nj": {
+            "type": "number",
+            "description": "Number of cells in Y direction"
+          },
+          "nk": {
+            "type": "number",
+            "description": "Number of cells in Z direction"
+          },
+          "xb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "description": "Domain [x_min,x_max,y_min,y_max,z_min,z_max]"
+          }
+        },
+        "required": [
+          "ni",
+          "nj",
+          "nk"
+        ]
+      }
+    },
+    {
+      "name": "set_time",
+      "description": "Set the simulation end time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "t_end": {
+            "type": "number",
+            "description": "Simulation end time (seconds)"
+          },
+          "t_begin": {
+            "type": "number",
+            "description": "Simulation start time (seconds, default 0)"
+          }
+        },
+        "required": [
+          "t_end"
+        ]
+      }
+    },
+    {
+      "name": "update_dump_config",
+      "description": "Update output dump intervals and settings.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "dt_slcf": {
+            "type": "number",
+            "description": "Slice file output interval (s)"
+          },
+          "dt_pl3d": {
+            "type": "number",
+            "description": "Plot3D output interval (s)"
+          },
+          "dt_s3d": {
+            "type": "number",
+            "description": "Smoke3D output interval (s)"
+          },
+          "dt_hrr": {
+            "type": "number",
+            "description": "HRR CSV output interval (s)"
+          },
+          "dt_devc": {
+            "type": "number",
+            "description": "Device CSV output interval (s)"
+          },
+          "dt_bndf": {
+            "type": "number",
+            "description": "Boundary (.bf) output interval (s). Omit or 0 to leave DT_BNDF out of the deck. The GPU engine writes BNDF at the DT_SLCF interval, so this only affects the CPU solver."
+          },
+          "dt_restart": {
+            "type": "number",
+            "description": "Restart/checkpoint interval (s). The GPU engine now writes a resumable checkpoint at this cadence."
+          },
+          "write_xyz": {
+            "type": "boolean",
+            "description": "Write XYZ grid file"
+          },
+          "nframes": {
+            "type": "number",
+            "description": "FDS NFRAMES (default 1000): any DT_* left unset is filled with (T_END-T_BEGIN)/NFRAMES. Lower it to cut slice/smoke frame count and disk usage on long runs."
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "set_turbulence_model",
+      "description": "Set the turbulence model. Options: DEARDORFF (default), VREMAN, WALE, CONSTANT_SMAGORINSKY.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "DEARDORFF",
+              "VREMAN",
+              "WALE",
+              "CONSTANT_SMAGORINSKY"
+            ],
+            "description": "Turbulence model name"
+          }
+        },
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "set_simulation_mode",
+      "description": "Set simulation mode: LES, VLES, SVLES, or DNS",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "LES",
+              "VLES",
+              "SVLES",
+              "DNS"
+            ],
+            "description": "Simulation mode"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      }
+    },
+    {
+      "name": "set_numerics",
+      "description": "Set numerical stability controls (time step and advection scheme). Use this when a run diverges, produces NaN, or when matching CPU FDS settings. dt/lock_time_step map to &TIME; the rest to &MISC. Omitted fields keep the FDS default for the current SIMULATION_MODE.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "dt": {
+            "type": "number",
+            "description": "Initial time step [s]. Omit to let the solver derive it from CFL_MAX*min(dx)/sqrt(g*H)."
+          },
+          "lock_time_step": {
+            "type": "boolean",
+            "description": "Freeze dt (disable CFL adaptation). Requires dt. Standard remedy for a diverging case."
+          },
+          "cfl_max": {
+            "type": "number",
+            "description": "CFL upper bound (FDS VLES default 1.0). Lower it (e.g. 0.5) to stabilise."
+          },
+          "cfl_min": {
+            "type": "number",
+            "description": "CFL lower bound (default 0.8) — below this the solver grows dt."
+          },
+          "vn_max": {
+            "type": "number",
+            "description": "Von Neumann (diffusion) stability limit. VLES 1.0 / LES 0.8 / DNS 0.5."
+          },
+          "flux_limiter": {
+            "type": "string",
+            "enum": [
+              "CENTRAL",
+              "GODUNOV",
+              "SUPERBEE",
+              "MINMOD",
+              "CHARM",
+              "MP5"
+            ],
+            "description": "Scalar advection limiter. VLES default SUPERBEE, LES/DNS default CHARM. The GPU engine has no CHARM/MP5 and falls back to MINMOD with a warning."
+          },
+          "c_deardorff": {
+            "type": "number",
+            "description": "Deardorff SGS constant (FDS default 0.1)."
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_numerics",
+      "description": "Read the current numerical stability settings (time step, CFL/VN limits, flux limiter).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "set_ambient",
+      "description": "Set the ambient (initial atmosphere) conditions written to &MISC: TMPA (ambient temperature °C), HUMIDITY (%RH), Y_CO2_INFTY (background CO2 mass fraction). The GPU engine reads all three. Use `extra` for any other &MISC key you need to carry (e.g. P_INF, GVEC) — it is written verbatim. Pass null for a key to drop it and fall back to the FDS default (TMPA 20°C, HUMIDITY 40%).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tmpa": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Ambient temperature [°C] (FDS default 20)"
+          },
+          "humidity": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Relative humidity [%] (FDS default 40)"
+          },
+          "y_co2_infty": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Background CO2 mass fraction (FDS default 0.000595)"
+          },
+          "extra": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Raw &MISC entries as 'KEY=VALUE' (e.g. [\"P_INF=101325.\"]). Replaces any entry with the same KEY."
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_simulation_settings",
+      "description": "Read every simulation setting in one call: time (T_BEGIN/T_END), SIMULATION_MODE, turbulence model, numerics (DT/CFL/VN/flux limiter), ambient &MISC values, output dump intervals and Plot3D quantities, and the mesh deck size. Use it before changing settings so you know what is already explicit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "list_raw_namelists",
+      "description": "List the raw namelist lines carried through unchanged (&RADI, &PRES, &COMB, &ZONE, &MULT, …) — settings the GUI has no dialog for but the deck and the engine keep.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "add_raw_namelist",
+      "description": "Add a raw namelist line emitted verbatim just before &TAIL — for settings with no GUI dialog (e.g. \"&RADI RADIATIVE_FRACTION=0.35 /\", \"&PRES VELOCITY_TOLERANCE=1.E-4 /\"). Must start with & and end with /. Use the dedicated tools for anything the GUI does model (&MESH/&OBST/&VENT/&SURF/&REAC/&DEVC/&CTRL/&SLCF/&BNDF/&DUMP/&TIME/&MISC) — a duplicate namelist is an FDS error.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "line": {
+            "type": "string",
+            "description": "Full namelist line, e.g. \"&RADI NUMBER_RADIATION_ANGLES=200 /\""
+          }
+        },
+        "required": [
+          "line"
+        ]
+      }
+    },
+    {
+      "name": "remove_raw_namelist",
+      "description": "Remove a raw namelist line by its index from list_raw_namelists.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "0-based index from list_raw_namelists"
+          }
+        },
+        "required": [
+          "index"
+        ]
+      }
+    },
+    {
+      "name": "list_meshes",
+      "description": "List the current &MESH deck (multi-mesh or the single mesh) with per-mesh XB, IJK, cell size, cell count and coarse/fine ratio, plus totals and a self-check for overlap / gaps / non-cubic cells. Read this before set_meshes, slice_mesh or merge_meshes so index numbers refer to the right mesh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "set_meshes",
+      "description": "Replace the whole &MESH deck with an explicit list of meshes (multi-mesh). Passing a single mesh reverts the project to single-mesh mode. config.mesh (the union bounding box) and the OPEN-boundary vents are kept consistent by the app. Engine constraints (GPU_code multimesh ratio_union_grid): (1) every mesh must use CUBIC cells whose size is the finest cell x 2^k (k in 1,2,4,8,16); (2) every mesh boundary and the union extent must land on a fine-grid index that is a multiple of the LARGEST ratio actually used; (3) meshes must tile the domain with no overlap and no gap; (4) a 1:4 or larger ratio makes the engine print an experimental-feature warning and switches it to per-mesh storage (MM2) plus the composite block-CG v2 pressure solve, both automatically. Verify with list_meshes; for shape-driven placement prefer auto_multimesh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "meshes": {
+            "type": "array",
+            "description": "Meshes that together tile the domain, in order.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ijk": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "description": "Cell counts [ni,nj,nk]"
+                },
+                "xb": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 6,
+                  "maxItems": 6,
+                  "description": "[x_min,x_max,y_min,y_max,z_min,z_max]"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Optional mesh ID (must be unique, e.g. M1)"
+                }
+              },
+              "required": [
+                "ijk",
+                "xb"
+              ]
+            }
+          }
+        },
+        "required": [
+          "meshes"
+        ]
+      }
+    },
+    {
+      "name": "slice_mesh",
+      "description": "Split one mesh into two at a plane (multi-mesh cutter). The coordinate snaps to that mesh's own grid lines, cell size is preserved on both halves, and OPEN vents crossing the plane are split too. Slicing the single mesh turns the project into a multi-mesh deck. Use list_meshes for index numbers.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "Mesh index from list_meshes (0-based)"
+          },
+          "axis": {
+            "type": "string",
+            "enum": [
+              "x",
+              "y",
+              "z"
+            ],
+            "description": "Axis normal to the cut plane"
+          },
+          "coord": {
+            "type": "number",
+            "description": "Cut position (m). Snapped to the nearest grid line of that mesh."
+          }
+        },
+        "required": [
+          "index",
+          "axis",
+          "coord"
+        ]
+      }
+    },
+    {
+      "name": "merge_meshes",
+      "description": "Merge several meshes back into one (inverse of slice_mesh). Succeeds only when the selected meshes do not overlap and their union is exactly a box. When their cell sizes differ, `choice` picks which size the result uses; the union must divide into a whole number of those cells. Use list_meshes for index numbers.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "indices": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Mesh indices to merge (2 or more)"
+          },
+          "choice": {
+            "type": "string",
+            "enum": [
+              "coarse",
+              "fine"
+            ],
+            "description": "Cell size to keep when the meshes differ: 'coarse' (larger cells, fewer) or 'fine'."
+          }
+        },
+        "required": [
+          "indices"
+        ]
+      }
+    },
+    {
+      "name": "auto_multimesh",
+      "description": "Build a multi-mesh deck from the OBSTRUCTION geometry. It measures the fluid gap everywhere (obstacles minus HOLEs, so doorways stay open), gives narrow places 3+ cells across and open places the default wide cell, then merges equal-size regions into boxes cut on obstacle faces so walls stay on mesh boundaries. Wall slabs up to 2 cells thick are absorbed into a neighbour. Cell sizes are quantised to min_cell x 2^k; an overlapping, gapped or misaligned deck is refused, not committed. The domain may grow to a multiple of the coarsest cell; OPEN vents follow. Engine constraints (GPU_code multimesh ratio_union_grid): (1) every mesh must use CUBIC cells whose size is the finest cell x 2^k (k in 1,2,4,8,16); (2) every mesh boundary and the union extent must land on a fine-grid index that is a multiple of the LARGEST ratio actually used; (3) meshes must tile the domain with no overlap and no gap; (4) a 1:4 or larger ratio makes the engine print an experimental-feature warning and switches it to per-mesh storage (MM2) plus the composite block-CG v2 pressure solve, both automatically. Verify the result with list_meshes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "min_cell": {
+            "type": "number",
+            "description": "Finest cell size (m), e.g. 0.05. Must be > 0; it is the bottom of the 2^k ladder."
+          },
+          "max_cell": {
+            "type": "number",
+            "description": "Coarsest cell size (m), e.g. 0.2. Rounded DOWN to min_cell x 2^k."
+          }
+        },
+        "required": [
+          "min_cell",
+          "max_cell"
+        ]
+      }
+    },
+    {
+      "name": "auto_cutcell_mesh",
+      "description": "Build a cut-cell multi-mesh deck from &GEOM triangulated shapes (plus OBSTs). Cells shrink where the fluid gap is narrow (gap / gap_cells), the GEOM surface band always gets the finest cell so the engine keeps its cut-cell wall physics there, sharp curvature gets one level finer, and levels change at most 2:1 between neighbouring blocks. Cell sizes are min_cell x 2^k. If the deck has no GEOM this is identical to auto_multimesh. Over budget it relaxes curvature, buffer, gap_cells, then raises min_cell and reports what it changed; a gapped, overlapping or misaligned deck is refused. Engine constraints (GPU_code multimesh ratio_union_grid): (1) every mesh must use CUBIC cells whose size is the finest cell x 2^k (k in 1,2,4,8,16); (2) every mesh boundary and the union extent must land on a fine-grid index that is a multiple of the LARGEST ratio actually used; (3) meshes must tile the domain with no overlap and no gap; (4) a 1:4 or larger ratio makes the engine print an experimental-feature warning and switches it to per-mesh storage (MM2) plus the composite block-CG v2 pressure solve, both automatically. Verify with list_meshes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "min_cell": {
+            "type": "number",
+            "description": "Finest cell size (m), e.g. 0.05 — used on the GEOM surface band and in narrow gaps."
+          },
+          "max_cell": {
+            "type": "number",
+            "description": "Coarsest cell size (m), e.g. 0.2. Rounded DOWN to min_cell x 2^k."
+          },
+          "gap_cells": {
+            "type": "number",
+            "description": "Minimum cells across a narrow gap (default 4, floor 3)."
+          }
+        },
+        "required": [
+          "min_cell",
+          "max_cell"
+        ]
+      }
+    },
+    {
+      "name": "add_material",
+      "description": "Add a material definition (MATL).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Material ID"
+          },
+          "density": {
+            "type": "number",
+            "description": "Density (kg/m³)"
+          },
+          "conductivity": {
+            "type": "number",
+            "description": "Thermal conductivity (W/m·K)"
+          },
+          "specific_heat": {
+            "type": "number",
+            "description": "Specific heat (kJ/kg·K)"
+          },
+          "emissivity": {
+            "type": "number",
+            "description": "Emissivity (0-1, default 0.9)"
+          }
+        },
+        "required": [
+          "id",
+          "density",
+          "conductivity",
+          "specific_heat"
+        ]
+      }
+    },
+    {
+      "name": "update_material",
+      "description": "Update a material by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Material ID to update"
+          },
+          "density": {
+            "type": "number"
+          },
+          "conductivity": {
+            "type": "number"
+          },
+          "specific_heat": {
+            "type": "number"
+          },
+          "emissivity": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "remove_material",
+      "description": "Remove a material by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Material ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_ramp",
+      "description": "Add a time ramp (RAMP) for time-dependent parameters. Points are [time, value] pairs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "RAMP ID"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "Array of [time, value] pairs"
+          }
+        },
+        "required": [
+          "id",
+          "points"
+        ]
+      }
+    },
+    {
+      "name": "update_ramp",
+      "description": "Update an existing ramp with new points.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "RAMP ID to update"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "New [time, value] pairs"
+          }
+        },
+        "required": [
+          "id",
+          "points"
+        ]
+      }
+    },
+    {
+      "name": "remove_ramp",
+      "description": "Remove a ramp by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "RAMP ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_surface",
+      "description": "Add a general surface (&SURF) with material layers, burning behaviour, thermal boundary conditions and injection. This is what gives walls/objects real heat transfer and lets them burn away.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Surface ID"
+          },
+          "description": {
+            "type": "string",
+            "description": "Free-text description (FYI)"
+          },
+          "color": {
+            "type": "string",
+            "description": "Display color as #rrggbb (emitted as RGB=r,g,b)"
+          },
+          "surface_type": {
+            "type": "string",
+            "enum": [
+              "layered",
+              "burner",
+              "inert",
+              "adiabatic",
+              "open",
+              "mirror",
+              "hvac",
+              "periodic"
+            ],
+            "description": "Surface type ('layered' = PyroSim general surface)"
+          },
+          "heat_transfer_model": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "LOGLAW",
+              "RAYLEIGH",
+              "IMPINGING JET",
+              "FM",
+              "UGENT"
+            ],
+            "description": "HEAT_TRANSFER_MODEL — gas-side convective correlation. 'DEFAULT' omits the key; any other string than these is rejected by FDS."
+          },
+          "cell_size": {
+            "type": "number",
+            "description": "CELL_SIZE [m] — solid-phase cell size"
+          },
+          "layer_divide": {
+            "type": "number",
+            "description": "LAYER_DIVIDE"
+          },
+          "layers": {
+            "type": "array",
+            "description": "Material layers, outermost first. Each layer: thickness [m] + material composition (mass fractions summing to 1).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "thickness": {
+                  "type": "number",
+                  "description": "Layer thickness [m] (THICKNESS(l))"
+                },
+                "materials": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "matl_id": {
+                        "type": "string",
+                        "description": "MATL ID (must exist as a &MATL)"
+                      },
+                      "mass_fraction": {
+                        "type": "number",
+                        "description": "MATL_MASS_FRACTION (default 1.0)"
+                      }
+                    },
+                    "required": [
+                      "matl_id"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "thickness",
+                "materials"
+              ]
+            }
+          },
+          "reaction_mode": {
+            "type": "string",
+            "enum": [
+              "material",
+              "manual",
+              "none"
+            ],
+            "description": "'material' = burning governed by MATL pyrolysis, 'manual' = governed by HRRPUA/MLRPUA on this surface"
+          },
+          "hrrpua": {
+            "type": "number",
+            "description": "HRRPUA [kW/m²] (manual mode)"
+          },
+          "mlrpua": {
+            "type": "number",
+            "description": "MLRPUA [kg/(m²·s)] (manual mode, exclusive with hrrpua)"
+          },
+          "tau_q": {
+            "type": "number",
+            "description": "TAU_Q [s] — ramp-up time (negative = t² growth)"
+          },
+          "ramp_id": {
+            "type": "string",
+            "description": "RAMP_Q id (overrides tau_q)"
+          },
+          "e_coefficient": {
+            "type": "number",
+            "description": "E_COEFFICIENT [m²/(kg·s)] — water extinguishing coefficient"
+          },
+          "ignition": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "temperature"
+            ],
+            "description": "Burn immediately or ignite at a temperature"
+          },
+          "ignition_temperature": {
+            "type": "number",
+            "description": "IGNITION_TEMPERATURE [°C]"
+          },
+          "heat_of_vaporization": {
+            "type": "number",
+            "description": "HEAT_OF_VAPORIZATION [kJ/kg]"
+          },
+          "burn_away": {
+            "type": "boolean",
+            "description": "BURN_AWAY — allow the obstruction to burn away"
+          },
+          "emissivity": {
+            "type": "number",
+            "description": "EMISSIVITY"
+          },
+          "tmp_front": {
+            "type": "number",
+            "description": "TMP_FRONT [°C] — fixed surface temperature"
+          },
+          "tmp_inner": {
+            "type": "number",
+            "description": "TMP_INNER [°C]"
+          },
+          "tmp_back": {
+            "type": "number",
+            "description": "TMP_BACK [°C]"
+          },
+          "backing": {
+            "type": "string",
+            "enum": [
+              "VOID",
+              "INSULATED",
+              "EXPOSED"
+            ],
+            "description": "BACKING"
+          },
+          "heat_transfer_coefficient": {
+            "type": "number",
+            "description": "HEAT_TRANSFER_COEFFICIENT [W/(m²·K)]"
+          },
+          "net_heat_flux": {
+            "type": "number",
+            "description": "NET_HEAT_FLUX [kW/m²]"
+          },
+          "convective_heat_flux": {
+            "type": "number",
+            "description": "CONVECTIVE_HEAT_FLUX [kW/m²]"
+          },
+          "external_flux": {
+            "type": "number",
+            "description": "EXTERNAL_FLUX [kW/m²]"
+          },
+          "species_injection": {
+            "type": "array",
+            "description": "Species injection rows (SPEC_ID/MASS_FLUX/MASS_FRACTION/VEL/VOLUME_FLOW/TAU_V)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "spec_id": {
+                  "type": "string"
+                },
+                "mass_flux": {
+                  "type": "number"
+                },
+                "mass_fraction": {
+                  "type": "number"
+                },
+                "vel": {
+                  "type": "number"
+                },
+                "volume_flow": {
+                  "type": "number"
+                },
+                "tau_v": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "spec_id"
+              ]
+            }
+          },
+          "particle_injection": {
+            "type": "array",
+            "description": "Particle injection (PART_ID/PARTICLE_MASS_FLUX/NPPC/DT_INSERT/PARTICLE_SURFACE_DENSITY)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "part_id": {
+                  "type": "string"
+                },
+                "particle_mass_flux": {
+                  "type": "number"
+                },
+                "nppc": {
+                  "type": "number"
+                },
+                "dt_insert": {
+                  "type": "number"
+                },
+                "particle_surface_density": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "part_id"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "update_surface",
+      "description": "Update an existing general surface (&SURF) by ID. Only the given fields change.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Surface ID to update"
+          },
+          "description": {
+            "type": "string",
+            "description": "Free-text description (FYI)"
+          },
+          "color": {
+            "type": "string",
+            "description": "Display color as #rrggbb (emitted as RGB=r,g,b)"
+          },
+          "surface_type": {
+            "type": "string",
+            "enum": [
+              "layered",
+              "burner",
+              "inert",
+              "adiabatic",
+              "open",
+              "mirror",
+              "hvac",
+              "periodic"
+            ],
+            "description": "Surface type ('layered' = PyroSim general surface)"
+          },
+          "heat_transfer_model": {
+            "type": "string",
+            "enum": [
+              "DEFAULT",
+              "LOGLAW",
+              "RAYLEIGH",
+              "IMPINGING JET",
+              "FM",
+              "UGENT"
+            ],
+            "description": "HEAT_TRANSFER_MODEL — gas-side convective correlation. 'DEFAULT' omits the key; any other string than these is rejected by FDS."
+          },
+          "cell_size": {
+            "type": "number",
+            "description": "CELL_SIZE [m] — solid-phase cell size"
+          },
+          "layer_divide": {
+            "type": "number",
+            "description": "LAYER_DIVIDE"
+          },
+          "layers": {
+            "type": "array",
+            "description": "Material layers, outermost first. Each layer: thickness [m] + material composition (mass fractions summing to 1).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "thickness": {
+                  "type": "number",
+                  "description": "Layer thickness [m] (THICKNESS(l))"
+                },
+                "materials": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "matl_id": {
+                        "type": "string",
+                        "description": "MATL ID (must exist as a &MATL)"
+                      },
+                      "mass_fraction": {
+                        "type": "number",
+                        "description": "MATL_MASS_FRACTION (default 1.0)"
+                      }
+                    },
+                    "required": [
+                      "matl_id"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "thickness",
+                "materials"
+              ]
+            }
+          },
+          "reaction_mode": {
+            "type": "string",
+            "enum": [
+              "material",
+              "manual",
+              "none"
+            ],
+            "description": "'material' = burning governed by MATL pyrolysis, 'manual' = governed by HRRPUA/MLRPUA on this surface"
+          },
+          "hrrpua": {
+            "type": "number",
+            "description": "HRRPUA [kW/m²] (manual mode)"
+          },
+          "mlrpua": {
+            "type": "number",
+            "description": "MLRPUA [kg/(m²·s)] (manual mode, exclusive with hrrpua)"
+          },
+          "tau_q": {
+            "type": "number",
+            "description": "TAU_Q [s] — ramp-up time (negative = t² growth)"
+          },
+          "ramp_id": {
+            "type": "string",
+            "description": "RAMP_Q id (overrides tau_q)"
+          },
+          "e_coefficient": {
+            "type": "number",
+            "description": "E_COEFFICIENT [m²/(kg·s)] — water extinguishing coefficient"
+          },
+          "ignition": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "temperature"
+            ],
+            "description": "Burn immediately or ignite at a temperature"
+          },
+          "ignition_temperature": {
+            "type": "number",
+            "description": "IGNITION_TEMPERATURE [°C]"
+          },
+          "heat_of_vaporization": {
+            "type": "number",
+            "description": "HEAT_OF_VAPORIZATION [kJ/kg]"
+          },
+          "burn_away": {
+            "type": "boolean",
+            "description": "BURN_AWAY — allow the obstruction to burn away"
+          },
+          "emissivity": {
+            "type": "number",
+            "description": "EMISSIVITY"
+          },
+          "tmp_front": {
+            "type": "number",
+            "description": "TMP_FRONT [°C] — fixed surface temperature"
+          },
+          "tmp_inner": {
+            "type": "number",
+            "description": "TMP_INNER [°C]"
+          },
+          "tmp_back": {
+            "type": "number",
+            "description": "TMP_BACK [°C]"
+          },
+          "backing": {
+            "type": "string",
+            "enum": [
+              "VOID",
+              "INSULATED",
+              "EXPOSED"
+            ],
+            "description": "BACKING"
+          },
+          "heat_transfer_coefficient": {
+            "type": "number",
+            "description": "HEAT_TRANSFER_COEFFICIENT [W/(m²·K)]"
+          },
+          "net_heat_flux": {
+            "type": "number",
+            "description": "NET_HEAT_FLUX [kW/m²]"
+          },
+          "convective_heat_flux": {
+            "type": "number",
+            "description": "CONVECTIVE_HEAT_FLUX [kW/m²]"
+          },
+          "external_flux": {
+            "type": "number",
+            "description": "EXTERNAL_FLUX [kW/m²]"
+          },
+          "species_injection": {
+            "type": "array",
+            "description": "Species injection rows (SPEC_ID/MASS_FLUX/MASS_FRACTION/VEL/VOLUME_FLOW/TAU_V)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "spec_id": {
+                  "type": "string"
+                },
+                "mass_flux": {
+                  "type": "number"
+                },
+                "mass_fraction": {
+                  "type": "number"
+                },
+                "vel": {
+                  "type": "number"
+                },
+                "volume_flow": {
+                  "type": "number"
+                },
+                "tau_v": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "spec_id"
+              ]
+            }
+          },
+          "particle_injection": {
+            "type": "array",
+            "description": "Particle injection (PART_ID/PARTICLE_MASS_FLUX/NPPC/DT_INSERT/PARTICLE_SURFACE_DENSITY)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "part_id": {
+                  "type": "string"
+                },
+                "particle_mass_flux": {
+                  "type": "number"
+                },
+                "nppc": {
+                  "type": "number"
+                },
+                "dt_insert": {
+                  "type": "number"
+                },
+                "particle_surface_density": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "part_id"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "remove_surface",
+      "description": "Remove a general surface (&SURF) by ID. Objects referencing it fall back to INERT.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Surface ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_surfaces",
+      "description": "List all user-defined general surfaces (&SURF) with their layers and burning behaviour.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "assign_surface",
+      "description": "Assign a surface (SURF_ID) to an obstacle, vent or geometry. Without 'faces' the whole object uses it; with 'faces' only those faces do (SURF_ID6 order -X,+X,-Y,+Y,-Z,+Z).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "surf_id": {
+            "type": "string",
+            "description": "Surface ID to assign (a user surface or a built-in like INERT/OPEN)"
+          },
+          "target_type": {
+            "type": "string",
+            "enum": [
+              "obstacle",
+              "vent",
+              "geom"
+            ],
+            "description": "What to assign it to"
+          },
+          "target_id": {
+            "type": "string",
+            "description": "ID of the obstacle / vent / geom"
+          },
+          "faces": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "xn",
+                "xp",
+                "yn",
+                "yp",
+                "zn",
+                "zp"
+              ]
+            },
+            "description": "Obstacle faces only: 'xn','xp','yn','yp','zn','zp' (-X,+X,-Y,+Y,-Z,+Z). Omit for all faces."
+          }
+        },
+        "required": [
+          "surf_id",
+          "target_type",
+          "target_id"
+        ]
+      }
+    },
+    {
+      "name": "list_material_library",
+      "description": "List built-in material presets (density/conductivity/specific heat/pyrolysis) available to add to the model, optionally filtered by category or search text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Filter: structure, wood, insulation, plastic, textile, cable, liquid_fuel, metal, other"
+          },
+          "search": {
+            "type": "string",
+            "description": "Substring match on id / Korean / English name"
+          }
+        }
+      }
+    },
+    {
+      "name": "add_material_from_library",
+      "description": "Copy a material preset from the built-in library into the model as a &MATL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "library_id": {
+            "type": "string",
+            "description": "Library material ID (see list_material_library)"
+          },
+          "id": {
+            "type": "string",
+            "description": "Optional new ID in the model (defaults to the library ID)"
+          }
+        },
+        "required": [
+          "library_id"
+        ]
+      }
+    },
+    {
+      "name": "add_surface_from_library",
+      "description": "Copy a surface preset from the built-in library into the model as a &SURF, pulling in any materials it needs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "library_id": {
+            "type": "string",
+            "description": "Library surface ID (see the Surfaces library in the GUI)"
+          },
+          "id": {
+            "type": "string",
+            "description": "Optional new ID in the model (defaults to the library ID)"
+          }
+        },
+        "required": [
+          "library_id"
+        ]
+      }
+    },
+    {
+      "name": "list_slcf",
+      "description": "List all slice (SLCF) outputs with id, quantity, plane, and flags.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "set_plot3d_outputs",
+      "description": "Set the Plot3D output quantities and species IDs (NUM dialog). Provide up to 5 quantities.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "quantities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "e.g. [\"TEMPERATURE\",\"U-VELOCITY\",...]"
+          },
+          "spec_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Species IDs for VOLUME FRACTION quantities"
+          }
+        }
+      }
+    },
+    {
+      "name": "add_slcf",
+      "description": "Add a slice file output (SLCF). Specify quantity and plane position.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique SLCF ID"
+          },
+          "quantity": {
+            "type": "string",
+            "description": "Quantity: TEMPERATURE, VELOCITY, VISIBILITY, VOLUME FRACTION, etc."
+          },
+          "spec_id": {
+            "type": "string",
+            "description": "Species ID for VOLUME FRACTION quantity"
+          },
+          "pbx": {
+            "type": "number",
+            "description": "X-plane position"
+          },
+          "pby": {
+            "type": "number",
+            "description": "Y-plane position"
+          },
+          "pbz": {
+            "type": "number",
+            "description": "Z-plane position"
+          },
+          "cell_centered": {
+            "type": "boolean",
+            "description": "Cell-centered output (default true)"
+          },
+          "vector": {
+            "type": "boolean",
+            "description": "Include velocity vectors (default false)"
+          }
+        },
+        "required": [
+          "id",
+          "quantity"
+        ]
+      }
+    },
+    {
+      "name": "remove_slcf",
+      "description": "Remove a slice file output by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "SLCF ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "update_slcf",
+      "description": "Update an existing SLCF output by ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "SLCF ID to update"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "spec_id": {
+            "type": "string"
+          },
+          "pbx": {
+            "type": "number"
+          },
+          "pby": {
+            "type": "number"
+          },
+          "pbz": {
+            "type": "number"
+          },
+          "cell_centered": {
+            "type": "boolean"
+          },
+          "vector": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_bndf",
+      "description": "List the animated boundary (BNDF) quantities written for solid surfaces.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "add_bndf",
+      "description": "Add an animated boundary quantity (&BNDF) such as WALL TEMPERATURE or ADIABATIC SURFACE TEMPERATURE. Use spec_id for species quantities (MASS FLUX, SURFACE DEPOSITION, MPUA_Z, CPUA_Z, AMPUA_Z) and part_id for particle quantities (MPUA, CPUA, AMPUA). The GPU engine records these 7 quantities: WALL TEMPERATURE, WALL HEAT FLUX, NET HEAT FLUX, RADIATIVE HEAT FLUX, CONVECTIVE HEAT FLUX, INCIDENT HEAT FLUX, BACK WALL TEMPERATURE. Any other quantity needs CPU FDS (the GPU engine warns and falls back to WALL HEAT FLUX). WALL HEAT FLUX is a GPU-engine-only name — use NET HEAT FLUX when the deck must also run on CPU FDS.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "string",
+            "description": "FDS BNDF QUANTITY, uppercase (e.g. 'WALL TEMPERATURE')"
+          },
+          "spec_id": {
+            "type": "string",
+            "description": "Species ID, for species-based quantities"
+          },
+          "part_id": {
+            "type": "string",
+            "description": "Particle class ID, for particle-based quantities"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      }
+    },
+    {
+      "name": "remove_bndf",
+      "description": "Remove an animated boundary quantity (&BNDF) by QUANTITY (and SPEC_ID/PART_ID when the entry has one).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "string",
+            "description": "BNDF QUANTITY to remove"
+          },
+          "spec_id": {
+            "type": "string"
+          },
+          "part_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      }
+    },
+    {
+      "name": "set_chid",
+      "description": "Set the simulation CHID (Case Heading Identifier) and optional title. Note: when the project is saved, CHID is normalized to the .fds file name (so output files such as <name>.smv match the deck file); a CHID set here only persists until the next save.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "chid": {
+            "type": "string",
+            "description": "Case ID (no spaces, used for output filenames)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Optional descriptive title"
+          }
+        },
+        "required": [
+          "chid"
+        ]
+      }
+    },
+    {
+      "name": "preview_fds",
+      "description": "Render the current project as FDS deck text and return it WITHOUT writing a file (the GUI FDS Preview dialog). Use `namelist` to show only one group (e.g. \"MESH\", \"SLCF\", \"OBST\", \"DUMP\") and `max_lines` to cap the output. This is the fastest way to check that a mesh / output / geometry change lands in the deck the way you expect.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "namelist": {
+            "type": "string",
+            "description": "Show only this namelist group, without '&' (e.g. MESH, DUMP, SLCF, OBST, VENT, SURF, CTRL)"
+          },
+          "max_lines": {
+            "type": "number",
+            "description": "Maximum lines to return (default 200; the reply says how many were cut)"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_object_properties",
+      "description": "Get one obstacle's full properties as JSON, including ALL Runtime FDS Properties (fds_override: fire HRRPUA/ramp, detector activation_temp/RTI, sprinkler k_factor/flow, HVAC airflow, fuel/REAC yields, etc.).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Obstacle ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "get_simulation_metrics",
+      "description": "Get LIVE simulation runtime metrics if a simulation is running: HRR(qdot, kW), Tmax(K), max velocities(umax/wmax), pmax, dt/cfl, step/time, nan count, ms/step, particles, GPU VRAM. Only meaningful in live mode with a running simulation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_config_summary",
+      "description": "Get a summary of the current FDS configuration: domain size, cell count, number of objects, etc.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "list_obstacles",
+      "description": "List all obstacles with their ID, position, and properties.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "list_vents",
+      "description": "List all vents with their ID, surface type, and position.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "list_devices",
+      "description": "List all measurement devices with their ID, quantity, and position.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "request_simulation_run",
+      "description": "Request to run the GPU simulation. Call this when the user asks to run/start/execute the simulation. Returns a condition summary for user confirmation before starting.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "validate_project",
+      "description": "Pre-flight check of the whole project before export or run: deck generation, mesh/domain sanity, objects outside the domain, duplicate IDs, dangling SURF_ID / MATL_ID / CTRL INPUT_ID / DEVC references, output intervals larger than T_END (which would store only the t=0 frame), missing OPEN boundary, fire without a reaction fuel, and LOCK_TIME_STEP without DT. Returns errors (deck will not run) and warnings (deck runs but the result is probably not what you want).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "rewrite_fds_via_ai",
+      "description": "FALLBACK for requests no dedicated tool can express (complex multi-mesh layouts, bulk or unusual namelist edits, anything the other tools cannot do). It exports the whole current project as a complete .fds file, sends the file plus your `instruction` to the AI model acting as an FDS editor, validates the edited file, and applies only the sections that changed back to the project (untouched sections keep their GUI metadata). Write `instruction` as a precise, self-contained editing brief in FDS terms (namelists, IDs, XB coordinates, IJK, cell sizes) — e.g. \"Split the single &MESH into 4 meshes along x with cell size 0.1 m, keep the domain\" or \"Add &MULT-free 2×2 mesh grid, meshes must align\". Do NOT use it for things a dedicated tool already does (add_wall, set_mesh, auto_multimesh, ...).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instruction": {
+            "type": "string",
+            "description": "Exact editing brief for the FDS file (what to change, where, with which values)."
+          }
+        },
+        "required": [
+          "instruction"
+        ]
+      }
+    },
+    {
+      "name": "evac_add_agent",
+      "description": "Add an evacuation agent at a specific position",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "Floor index (0-based)"
+          },
+          "desiredSpeed": {
+            "type": "number",
+            "description": "Desired speed (m/s, default 1.2)"
+          },
+          "maxSpeed": {
+            "type": "number",
+            "description": "Max speed (m/s, default 1.8)"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "name": "evac_add_agents_batch",
+      "description": "Add multiple evacuation agents distributed in a rectangular area",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "xMin": {
+            "type": "number",
+            "description": "Area X min (m)"
+          },
+          "xMax": {
+            "type": "number",
+            "description": "Area X max (m)"
+          },
+          "yMin": {
+            "type": "number",
+            "description": "Area Y min (m)"
+          },
+          "yMax": {
+            "type": "number",
+            "description": "Area Y max (m)"
+          },
+          "count": {
+            "type": "number",
+            "description": "Number of agents to place"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "Floor index (0-based, default 0)"
+          },
+          "desiredSpeed": {
+            "type": "number",
+            "description": "Desired speed for all agents (m/s, default 1.2)"
+          }
+        },
+        "required": [
+          "xMin",
+          "xMax",
+          "yMin",
+          "yMax",
+          "count"
+        ]
+      }
+    },
+    {
+      "name": "evac_remove_agent",
+      "description": "Remove an evacuation agent by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Agent ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_clear_agents",
+      "description": "Remove all evacuation agents",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "evac_add_stair",
+      "description": "Add a staircase connecting two floors",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fromFloorIndex": {
+            "type": "number",
+            "description": "Source floor index"
+          },
+          "toFloorIndex": {
+            "type": "number",
+            "description": "Target floor index"
+          },
+          "x1": {
+            "type": "number",
+            "description": "Stair start X (m)"
+          },
+          "y1": {
+            "type": "number",
+            "description": "Stair start Y (m)"
+          },
+          "x2": {
+            "type": "number",
+            "description": "Stair end X (m)"
+          },
+          "y2": {
+            "type": "number",
+            "description": "Stair end Y (m)"
+          },
+          "widthCm": {
+            "type": "number",
+            "description": "Stair width (cm, default 120)"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "Max simultaneous users (default 20)"
+          }
+        },
+        "required": [
+          "fromFloorIndex",
+          "toFloorIndex",
+          "x1",
+          "y1",
+          "x2",
+          "y2"
+        ]
+      }
+    },
+    {
+      "name": "evac_add_waypoint",
+      "description": "Add a navigation waypoint for evacuation routing",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "Floor index (default 0)"
+          },
+          "radius": {
+            "type": "number",
+            "description": "Attraction radius (m, default 1.0)"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "name": "evac_add_journey",
+      "description": "Create an evacuation journey (route) with named stages",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Journey name"
+          },
+          "stages": {
+            "type": "array",
+            "description": "Ordered stages (each: {type: \"waypoint\"|\"stair\"|\"exit\", targetId: string})",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "targetId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "evac_update_agent",
+      "description": "Update properties of an existing evacuation agent",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Agent ID"
+          },
+          "x": {
+            "type": "number",
+            "description": "New X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "New Y position (m)"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "New floor index"
+          },
+          "desiredSpeed": {
+            "type": "number",
+            "description": "New desired speed (m/s)"
+          },
+          "maxSpeed": {
+            "type": "number",
+            "description": "New max speed (m/s)"
+          },
+          "mass": {
+            "type": "number",
+            "description": "New mass (kg)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_update_stair",
+      "description": "Update properties of an existing staircase",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stair ID"
+          },
+          "fromFloorIndex": {
+            "type": "number",
+            "description": "New source floor index"
+          },
+          "toFloorIndex": {
+            "type": "number",
+            "description": "New target floor index"
+          },
+          "x1": {
+            "type": "number",
+            "description": "New stair start X (m)"
+          },
+          "y1": {
+            "type": "number",
+            "description": "New stair start Y (m)"
+          },
+          "x2": {
+            "type": "number",
+            "description": "New stair end X (m)"
+          },
+          "y2": {
+            "type": "number",
+            "description": "New stair end Y (m)"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "New max simultaneous users"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_remove_stair",
+      "description": "Remove a staircase by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stair ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_update_waypoint",
+      "description": "Update properties of an existing waypoint",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Waypoint ID"
+          },
+          "x": {
+            "type": "number",
+            "description": "New X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "New Y position (m)"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "New floor index"
+          },
+          "radius": {
+            "type": "number",
+            "description": "New attraction radius (m)"
+          },
+          "waitingTime": {
+            "type": "number",
+            "description": "New waiting time (s)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_remove_waypoint",
+      "description": "Remove a waypoint by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Waypoint ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_update_journey",
+      "description": "Update an existing evacuation journey",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Journey ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "New journey name"
+          },
+          "stages": {
+            "type": "array",
+            "description": "New stages array ({type, targetId})",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "targetId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_remove_journey",
+      "description": "Remove an evacuation journey by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Journey ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "evac_update_setup",
+      "description": "Update evacuation simulation settings (model, time, timestep)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "Model: CollisionFreeSpeed | SocialForce | GeneralizedCentrifugal | CollisionFreeSpeedV2"
+          },
+          "simulationTime": {
+            "type": "number",
+            "description": "Total simulation time (s)"
+          },
+          "timeStep": {
+            "type": "number",
+            "description": "Time step (s)"
+          }
+        }
+      }
+    },
+    {
+      "name": "evac_list_summary",
+      "description": "Get current evacuation module status summary (read-only)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "spr_get_results",
+      "description": "Get sprinkler hydraulic calculation results (run spr_run_calc first): total flow, source pressure, pipe velocity / nozzle flow ranges.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "spr_add_node",
+      "description": "Add a pipe network node (junction, sprinkler, or source)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Z position (m, default 3.0)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Node type: junction | sprinkler | source"
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional label"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "Floor index (default 0)"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "type"
+        ]
+      }
+    },
+    {
+      "name": "spr_add_pipe",
+      "description": "Connect two nodes with a pipe",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "startNodeId": {
+            "type": "string",
+            "description": "Start node ID"
+          },
+          "endNodeId": {
+            "type": "string",
+            "description": "End node ID"
+          },
+          "diameter": {
+            "type": "number",
+            "description": "Pipe diameter (mm, default uses store default)"
+          },
+          "material": {
+            "type": "string",
+            "description": "Material: KSD3507 | CPVC | STS304 | ASTM_SCH40"
+          }
+        },
+        "required": [
+          "startNodeId",
+          "endNodeId"
+        ]
+      }
+    },
+    {
+      "name": "spr_add_sprinkler_head",
+      "description": "Add a sprinkler head to an existing sprinkler node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "Sprinkler node ID"
+          },
+          "kFactor": {
+            "type": "number",
+            "description": "K-Factor (default 80)"
+          },
+          "headType": {
+            "type": "string",
+            "description": "Type: pendant | upright | sidewall"
+          },
+          "activationTemp": {
+            "type": "number",
+            "description": "Activation temp (C, default 68)"
+          },
+          "coverageRadius": {
+            "type": "number",
+            "description": "Coverage radius (m, default 2.3)"
+          }
+        },
+        "required": [
+          "nodeId"
+        ]
+      }
+    },
+    {
+      "name": "spr_add_water_source",
+      "description": "Add a water source to an existing source node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "Source node ID"
+          },
+          "sourceType": {
+            "type": "string",
+            "description": "Type: city_water | pump | gravity_tank | pressure_tank"
+          },
+          "staticPressure": {
+            "type": "number",
+            "description": "Static pressure (MPa, default 0.5)"
+          },
+          "residualPressure": {
+            "type": "number",
+            "description": "Residual pressure (MPa, default 0.3)"
+          },
+          "residualFlow": {
+            "type": "number",
+            "description": "Residual flow (L/min, default 1000)"
+          }
+        },
+        "required": [
+          "nodeId"
+        ]
+      }
+    },
+    {
+      "name": "spr_remove_node",
+      "description": "Remove a pipe node (also removes connected pipes and heads)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Node ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_update_pipe",
+      "description": "Update properties of an existing pipe",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Pipe ID"
+          },
+          "diameter": {
+            "type": "number",
+            "description": "New diameter (mm)"
+          },
+          "material": {
+            "type": "string",
+            "description": "New material: KSD3507 | CPVC | STS304 | ASTM_SCH40"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_update_node",
+      "description": "Update properties of an existing pipe network node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Node ID"
+          },
+          "x": {
+            "type": "number",
+            "description": "New X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "New Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "New Z position (m)"
+          },
+          "type": {
+            "type": "string",
+            "description": "New node type: junction | sprinkler | source"
+          },
+          "label": {
+            "type": "string",
+            "description": "New label"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_remove_pipe",
+      "description": "Remove a pipe connection by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Pipe ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_update_sprinkler_head",
+      "description": "Update properties of an existing sprinkler head",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Sprinkler head ID"
+          },
+          "kFactor": {
+            "type": "number",
+            "description": "New K-Factor"
+          },
+          "headType": {
+            "type": "string",
+            "description": "New type: pendant | upright | sidewall"
+          },
+          "activationTemp": {
+            "type": "number",
+            "description": "New activation temp (°C)"
+          },
+          "coverageRadius": {
+            "type": "number",
+            "description": "New coverage radius (m)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_remove_sprinkler_head",
+      "description": "Remove a sprinkler head by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Sprinkler head ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_update_water_source",
+      "description": "Update properties of an existing water source",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Water source ID"
+          },
+          "sourceType": {
+            "type": "string",
+            "description": "New type: city_water | pump | gravity_tank | pressure_tank"
+          },
+          "staticPressure": {
+            "type": "number",
+            "description": "New static pressure (MPa)"
+          },
+          "residualPressure": {
+            "type": "number",
+            "description": "New residual pressure (MPa)"
+          },
+          "residualFlow": {
+            "type": "number",
+            "description": "New residual flow (L/min)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_remove_water_source",
+      "description": "Remove a water source by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Water source ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "spr_set_defaults",
+      "description": "Set default pipe diameter, material, and K-factor for new pipes/heads",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "defaultDiameter": {
+            "type": "number",
+            "description": "Default diameter (mm)"
+          },
+          "defaultMaterial": {
+            "type": "string",
+            "description": "Default material"
+          },
+          "defaultKFactor": {
+            "type": "number",
+            "description": "Default K-factor"
+          }
+        }
+      }
+    },
+    {
+      "name": "spr_run_calc",
+      "description": "Run hydraulic calculation on the current sprinkler network",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "spr_list_summary",
+      "description": "Get current sprinkler network status summary (read-only)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "spr_auto_layout",
+      "description": "Automatically place sprinklers in a grid pattern within a rectangular area. Creates source node, junction nodes, sprinkler nodes, pipes, heads, and water source.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "xMin": {
+            "type": "number",
+            "description": "Area X min (m)"
+          },
+          "xMax": {
+            "type": "number",
+            "description": "Area X max (m)"
+          },
+          "yMin": {
+            "type": "number",
+            "description": "Area Y min (m)"
+          },
+          "yMax": {
+            "type": "number",
+            "description": "Area Y max (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Sprinkler height (m, default 2.8)"
+          },
+          "spacingX": {
+            "type": "number",
+            "description": "X spacing between sprinklers (m, default 3.0)"
+          },
+          "spacingY": {
+            "type": "number",
+            "description": "Y spacing between sprinklers (m, default 3.0)"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "Floor index (default 0)"
+          }
+        },
+        "required": [
+          "xMin",
+          "xMax",
+          "yMin",
+          "yMax"
+        ]
+      }
+    },
+    {
+      "name": "spr_apply_to_fds",
+      "description": "Apply the hydraulic pipe-network sprinklers to the FDS model: for every sprinkler node (with a head and calc results from spr_run_calc), creates/replaces DEVC (SPRINKLER LINK TEMPERATURE) + PROP + PART entries using the calculated nozzle flow and pressure. Run spr_run_calc first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "hvac_get_results",
+      "description": "Get HVAC airflow calculation results (run hvac_run_calc first): total supply/exhaust flow, duct velocity / terminal flow ranges.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "hvac_add_node",
+      "description": "Add an HVAC node (junction, supply_diffuser, exhaust_grille, or fan)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Z position (m, default 3.0)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Node type: junction | supply_diffuser | exhaust_grille | fan"
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional label"
+          },
+          "floorIndex": {
+            "type": "number",
+            "description": "Floor index (default 0)"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "type"
+        ]
+      }
+    },
+    {
+      "name": "hvac_add_duct",
+      "description": "Connect two HVAC nodes with a duct",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "startNodeId": {
+            "type": "string",
+            "description": "Start node ID"
+          },
+          "endNodeId": {
+            "type": "string",
+            "description": "End node ID"
+          },
+          "ductShape": {
+            "type": "string",
+            "description": "Shape: circular | rectangular"
+          },
+          "diameter": {
+            "type": "number",
+            "description": "Diameter (mm, for circular)"
+          },
+          "width": {
+            "type": "number",
+            "description": "Width (mm, for rectangular)"
+          },
+          "height": {
+            "type": "number",
+            "description": "Height (mm, for rectangular)"
+          },
+          "material": {
+            "type": "string",
+            "description": "Material: galvanized_steel | stainless_steel | aluminum | flexible"
+          }
+        },
+        "required": [
+          "startNodeId",
+          "endNodeId"
+        ]
+      }
+    },
+    {
+      "name": "hvac_add_supply_diffuser",
+      "description": "Add a supply diffuser to an existing supply node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "Supply node ID"
+          },
+          "airflowCFM": {
+            "type": "number",
+            "description": "Airflow (CFM, default 200)"
+          },
+          "supplyTempC": {
+            "type": "number",
+            "description": "Supply temperature (C, default 20)"
+          },
+          "diffuserType": {
+            "type": "string",
+            "description": "Type: square | round | linear | slot"
+          }
+        },
+        "required": [
+          "nodeId"
+        ]
+      }
+    },
+    {
+      "name": "hvac_add_exhaust_grille",
+      "description": "Add an exhaust grille to an existing exhaust node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "Exhaust node ID"
+          },
+          "airflowCFM": {
+            "type": "number",
+            "description": "Airflow (CFM, default 200)"
+          },
+          "grilleType": {
+            "type": "string",
+            "description": "Type: louvered | perforated | egg_crate | bar"
+          }
+        },
+        "required": [
+          "nodeId"
+        ]
+      }
+    },
+    {
+      "name": "hvac_add_air_handler",
+      "description": "Add an air handler unit (AHU) to an existing fan node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string",
+            "description": "Fan node ID"
+          },
+          "maxAirflowCFM": {
+            "type": "number",
+            "description": "Max airflow (CFM, default 2000)"
+          },
+          "staticPressurePa": {
+            "type": "number",
+            "description": "Static pressure (Pa, default 500)"
+          },
+          "fanType": {
+            "type": "string",
+            "description": "Type: supply | exhaust | return"
+          }
+        },
+        "required": [
+          "nodeId"
+        ]
+      }
+    },
+    {
+      "name": "hvac_remove_node",
+      "description": "Remove an HVAC node (also removes connected ducts and equipment)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Node ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_update_duct",
+      "description": "Update properties of an existing duct",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Duct ID"
+          },
+          "ductShape": {
+            "type": "string",
+            "description": "Shape: circular | rectangular"
+          },
+          "diameter": {
+            "type": "number",
+            "description": "Diameter (mm)"
+          },
+          "width": {
+            "type": "number",
+            "description": "Width (mm)"
+          },
+          "height": {
+            "type": "number",
+            "description": "Height (mm)"
+          },
+          "material": {
+            "type": "string",
+            "description": "Material"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_update_node",
+      "description": "Update properties of an existing HVAC node",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Node ID"
+          },
+          "x": {
+            "type": "number",
+            "description": "New X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "New Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "New Z position (m)"
+          },
+          "type": {
+            "type": "string",
+            "description": "New type: junction | supply_diffuser | exhaust_grille | fan"
+          },
+          "label": {
+            "type": "string",
+            "description": "New label"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_remove_duct",
+      "description": "Remove a duct connection by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Duct ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_update_supply_diffuser",
+      "description": "Update properties of an existing supply diffuser",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Supply diffuser ID"
+          },
+          "airflowCFM": {
+            "type": "number",
+            "description": "New airflow (CFM)"
+          },
+          "supplyTempC": {
+            "type": "number",
+            "description": "New supply temperature (°C)"
+          },
+          "diffuserType": {
+            "type": "string",
+            "description": "New type: square | round | linear | slot"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_remove_supply_diffuser",
+      "description": "Remove a supply diffuser by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Supply diffuser ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_update_exhaust_grille",
+      "description": "Update properties of an existing exhaust grille",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Exhaust grille ID"
+          },
+          "airflowCFM": {
+            "type": "number",
+            "description": "New airflow (CFM)"
+          },
+          "grilleType": {
+            "type": "string",
+            "description": "New type: louvered | perforated | egg_crate | bar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_remove_exhaust_grille",
+      "description": "Remove an exhaust grille by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Exhaust grille ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_update_air_handler",
+      "description": "Update properties of an existing air handler unit",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Air handler ID"
+          },
+          "maxAirflowCFM": {
+            "type": "number",
+            "description": "New max airflow (CFM)"
+          },
+          "staticPressurePa": {
+            "type": "number",
+            "description": "New static pressure (Pa)"
+          },
+          "fanType": {
+            "type": "string",
+            "description": "New type: supply | exhaust | return"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_remove_air_handler",
+      "description": "Remove an air handler unit by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Air handler ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "hvac_set_defaults",
+      "description": "Set default duct shape, diameter, and material for new ducts",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "ductShape": {
+            "type": "string",
+            "description": "Default shape: circular | rectangular"
+          },
+          "diameter": {
+            "type": "number",
+            "description": "Default diameter (mm)"
+          },
+          "width": {
+            "type": "number",
+            "description": "Default width (mm, for rectangular)"
+          },
+          "height": {
+            "type": "number",
+            "description": "Default height (mm, for rectangular)"
+          },
+          "material": {
+            "type": "string",
+            "description": "Default material"
+          },
+          "airflowCFM": {
+            "type": "number",
+            "description": "Default airflow (CFM)"
+          }
+        }
+      }
+    },
+    {
+      "name": "hvac_run_calc",
+      "description": "Run HVAC airflow calculation on the current duct network",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "hvac_list_summary",
+      "description": "Get current HVAC network status summary (read-only)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "draw_add_story",
+      "description": "Add a new building story (floor level)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "draw_update_story",
+      "description": "Update a story name or height",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Story ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "New story name"
+          },
+          "height": {
+            "type": "number",
+            "description": "New story height (m)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "draw_set_wall_params",
+      "description": "Set default wall height and thickness for 2D drawing",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "wallHeight": {
+            "type": "number",
+            "description": "Wall height (m, default 3.0)"
+          },
+          "wallThickness": {
+            "type": "number",
+            "description": "Wall thickness (m, default 0.2)"
+          }
+        }
+      }
+    },
+    {
+      "name": "draw_set_door_params",
+      "description": "Set default door dimensions",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "doorWidth": {
+            "type": "number",
+            "description": "Door width (m, default 0.9)"
+          },
+          "doorHeight": {
+            "type": "number",
+            "description": "Door height (m, default 2.1)"
+          }
+        }
+      }
+    },
+    {
+      "name": "draw_set_window_params",
+      "description": "Set default window dimensions",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "windowWidth": {
+            "type": "number",
+            "description": "Window width (m, default 1.2)"
+          },
+          "windowSillHeight": {
+            "type": "number",
+            "description": "Sill height from floor (m, default 0.9)"
+          },
+          "windowHeight": {
+            "type": "number",
+            "description": "Window height (m, default 1.2)"
+          }
+        }
+      }
+    },
+    {
+      "name": "draw_remove_story",
+      "description": "Remove a building story by ID",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Story ID to remove"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "draw_list_stories",
+      "description": "Get current building stories list (read-only)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "list_furniture_catalog",
+      "description": "List available furniture items. Filter by category or keyword search.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category filter: living_room, bedroom, kitchen, office, bathroom, fire_safety, hvac, doors_windows, lights, misc"
+          },
+          "keyword": {
+            "type": "string",
+            "description": "Search keyword (name or ID)"
+          }
+        }
+      }
+    },
+    {
+      "name": "get_furniture_info",
+      "description": "Get detailed information about a specific furniture item (dimensions, fire data, fuel)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "furniture_id": {
+            "type": "string",
+            "description": "Furniture ID (e.g. single_bed, sofa_3seat)"
+          }
+        },
+        "required": [
+          "furniture_id"
+        ]
+      }
+    },
+    {
+      "name": "place_furniture",
+      "description": "Place a furniture/item at a position. Doors and windows (doors_windows category) auto-snap to the nearest wall and create a wall opening (hole), exactly like the GUI. Items with fire data are placed as fire sources automatically. Changes reflect to the 2D/3D view immediately.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "furniture_id": {
+            "type": "string",
+            "description": "Furniture ID from catalog"
+          },
+          "x": {
+            "type": "number",
+            "description": "X position (m)"
+          },
+          "y": {
+            "type": "number",
+            "description": "Y position (m)"
+          },
+          "z": {
+            "type": "number",
+            "description": "Z position (m, default 0)"
+          },
+          "as_fire_source": {
+            "type": "boolean",
+            "description": "Place as fire source (uses furniture fire data)"
+          }
+        },
+        "required": [
+          "furniture_id",
+          "x",
+          "y"
+        ]
+      }
+    },
+    {
+      "name": "result_get_state",
+      "description": "Get the result viewer current state: active dataset, current time, colormap, legend range, playback, particles, view-lock, graph probe count. Read this before setting values.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "result_set_view_locked",
+      "description": "Lock/link the result view for side-by-side compare (true = linked).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "locked": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "locked"
+        ]
+      }
+    },
+    {
+      "name": "result_add_graph_probe",
+      "description": "Add a graph probe to extract time-series data. type=point needs xyz; type=line needs start & end. slot: primary or compare.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "point",
+              "line"
+            ]
+          },
+          "xyz": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "start": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "end": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "slot": {
+            "type": "string",
+            "enum": [
+              "primary",
+              "compare"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      }
+    },
+    {
+      "name": "result_clear_graph_probes",
+      "description": "Remove all graph probes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "result_set_time",
+      "description": "Set the result viewer playback time (seconds).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "number",
+            "description": "재생 시점 (초)"
+          }
+        },
+        "required": [
+          "time"
+        ]
+      }
+    },
+    {
+      "name": "result_toggle_playback",
+      "description": "Toggle play/pause of the result animation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "result_set_playback_speed",
+      "description": "Set result animation playback speed (1.0 = real-time).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "speed": {
+            "type": "number",
+            "description": "재생 속도 배율"
+          }
+        },
+        "required": [
+          "speed"
+        ]
+      }
+    },
+    {
+      "name": "result_set_colormap",
+      "description": "Set the result colormap. name: 'turbo'|'jet'|'inferno'|'viridis'|'grayscale'.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "turbo",
+              "jet",
+              "inferno",
+              "viridis",
+              "grayscale"
+            ],
+            "description": "컬러맵"
+          },
+          "reversed": {
+            "type": "boolean",
+            "description": "색상 반전"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "result_set_legend_range",
+      "description": "Set the result colorbar (legend) min/max range. Use null for auto.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "범례 최소 (null=자동)"
+          },
+          "max": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "범례 최대 (null=자동)"
+          }
+        }
+      }
+    },
+    {
+      "name": "result_set_active_dataset",
+      "description": "Select the active result dataset by id. Node id shapes: slcf-<n> (slice), pl3d-var-<n> (3D data), s3d-<n> (smoke), bndf-<n> (boundary surface, .bf), prt5-<n> (particles), csv-hrr / csv-devc (time series).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "데이터셋 id"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "result_set_particles",
+      "description": "Configure particle rendering in the result viewer.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "visible": {
+            "type": "boolean"
+          },
+          "pointSize": {
+            "type": "number"
+          },
+          "renderMode": {
+            "type": "string",
+            "enum": [
+              "points",
+              "sprite",
+              "sphere"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "shape_new_document",
+      "description": "Shape Studio: start a new empty shape document (discards current shape tree).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "shape_get_tree",
+      "description": "Shape Studio: get the current feature tree (nodes, params, roots, bounding boxes). Call this to see what exists before editing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "shape_add_box",
+      "description": "Shape Studio: add a box. Origin = bottom-face center, z-up, metres. Optional at=[x,y,z] placement and rotate_deg=[rx,ry,rz].",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "w": {
+            "type": "number",
+            "description": "Width (x, m)"
+          },
+          "d": {
+            "type": "number",
+            "description": "Depth (y, m)"
+          },
+          "h": {
+            "type": "number",
+            "description": "Height (z, m)"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string",
+            "description": "FDS SURF to assign on export"
+          },
+          "color": {
+            "type": "string",
+            "description": "Viewport hex color"
+          }
+        },
+        "required": [
+          "w",
+          "d",
+          "h"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_cylinder",
+      "description": "Shape Studio: add a cylinder (axis along z, origin = bottom center, m).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "r": {
+            "type": "number",
+            "description": "Radius (m)"
+          },
+          "h": {
+            "type": "number",
+            "description": "Height (z, m)"
+          },
+          "segments": {
+            "type": "number",
+            "description": "Circle segments (default 32)"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "r",
+          "h"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_sphere",
+      "description": "Shape Studio: add a sphere (origin = bottom tangent point, m).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "r": {
+            "type": "number"
+          },
+          "segments": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "r"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_cone",
+      "description": "Shape Studio: add a cone/frustum (r1=bottom radius, r2=top radius, axis z, m).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "r1": {
+            "type": "number"
+          },
+          "r2": {
+            "type": "number"
+          },
+          "h": {
+            "type": "number"
+          },
+          "segments": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "r1",
+          "r2",
+          "h"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_torus",
+      "description": "Shape Studio: add a torus lying in the xy plane (r=ring radius, tube=tube radius, m).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "r": {
+            "type": "number"
+          },
+          "tube": {
+            "type": "number"
+          },
+          "segments": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "r",
+          "tube"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_wedge",
+      "description": "Shape Studio: add a right-angle wedge (ramp). Base w×d, height h; slope descends along +x. (m)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "w": {
+            "type": "number"
+          },
+          "d": {
+            "type": "number"
+          },
+          "h": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "w",
+          "d",
+          "h"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_polygon_prism",
+      "description": "Shape Studio: extrude a 2D polygon (xy plane, CCW) along z by height — like FreeCAD Sketch+Pad. points=[[x,y],...] (m).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "minItems": 3
+          },
+          "height": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "points",
+          "height"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_revolve",
+      "description": "Shape Studio: revolve a half-profile around the z axis — like FreeCAD Revolution. points=[[radius,z],...] radius>=0, top-to-bottom order. angle_deg default 360.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "minItems": 2
+          },
+          "angle_deg": {
+            "type": "number"
+          },
+          "segments": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "points"
+        ]
+      }
+    },
+    {
+      "name": "shape_add_arch",
+      "description": "Shape Studio: add an ARCHED / VAULTED / SEMICIRCULAR ceiling (barrel vault, dome-roof tunnel) in ONE call — a curved shell whose inner surface is a circular arc of clear width `span` and inner height `rise` above the springing line (rise = span/2 → semicircle; smaller → shallow segmental arch), extruded `length` metres along `axis`. Use this whenever the user asks for a round/arched/curved/semicircular ceiling or tunnel roof instead of composing primitives. Placement: `start` = coordinate along the axis where the arch begins, `center` = transverse coordinate of the arch centre line, `z_base` = height of the springing line (0 = arch rises from the floor; for a room use the wall-top height). Afterwards export it with shape_export_geom (exact curved &GEOM for the cut-cell solver) or shape_export_obst (voxelised). Units: metres.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "axis": {
+            "type": "string",
+            "enum": [
+              "x",
+              "y"
+            ],
+            "description": "Extrusion (tunnel) axis"
+          },
+          "span": {
+            "type": "number",
+            "description": "Inner clear width (m), e.g. tunnel width"
+          },
+          "length": {
+            "type": "number",
+            "description": "Extrusion length along the axis (m)"
+          },
+          "rise": {
+            "type": "number",
+            "description": "Inner arch height above the springing line (m). Default span/2 (semicircle)."
+          },
+          "thickness": {
+            "type": "number",
+            "description": "Shell thickness (m). Default 0.3"
+          },
+          "start": {
+            "type": "number",
+            "description": "Axis coordinate where the arch begins (m). Default 0"
+          },
+          "center": {
+            "type": "number",
+            "description": "Transverse coordinate of the arch centre line (m). Default 0"
+          },
+          "z_base": {
+            "type": "number",
+            "description": "Springing-line height (m). Default 0"
+          },
+          "segments": {
+            "type": "number",
+            "description": "Arc facets (default 48)"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "axis",
+          "span",
+          "length"
+        ]
+      }
+    },
+    {
+      "name": "shape_boolean",
+      "description": "Shape Studio: boolean of nodes. union=merge all; subtract=first minus rest; intersect=common volume. Input nodes are consumed into the result.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "type": "string",
+            "enum": [
+              "union",
+              "subtract",
+              "intersect"
+            ]
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Node ids"
+          },
+          "name": {
+            "type": "string"
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "op",
+          "inputs"
+        ]
+      }
+    },
+    {
+      "name": "shape_transform",
+      "description": "Shape Studio: wrap a node with translate/rotate/scale. To move an existing shape, prefer shape_set_params on its transform node if it has one.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "Node id"
+          },
+          "translate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotate_deg": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "scale": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "name": "shape_mirror",
+      "description": "Shape Studio: mirror a node across a plane ('xy'|'yz'|'xz', offset = plane position). keep_original default true (result = original + mirrored union).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string"
+          },
+          "plane": {
+            "type": "string",
+            "enum": [
+              "xy",
+              "yz",
+              "xz"
+            ]
+          },
+          "offset": {
+            "type": "number"
+          },
+          "keep_original": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "input",
+          "plane"
+        ]
+      }
+    },
+    {
+      "name": "shape_array",
+      "description": "Shape Studio: repeat a node. linear: step=[dx,dy,dz] per copy. polar: rotate copies around a z-parallel axis at axis_point=[x,y], total angle_deg (default 360).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "linear",
+              "polar"
+            ]
+          },
+          "count": {
+            "type": "number"
+          },
+          "step": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "axis_point": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "angle_deg": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "input",
+          "mode",
+          "count"
+        ]
+      }
+    },
+    {
+      "name": "shape_hull",
+      "description": "Shape Studio: convex hull of the given nodes (blob/rounded forms).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "inputs"
+        ]
+      }
+    },
+    {
+      "name": "shape_set_params",
+      "description": "Shape Studio: change parameters of an existing node — everything downstream recomputes automatically (parametric). e.g. {id:\"s3\", params:{r:0.4}} or {params:{translate:[1,0,0]}} on a transform node.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "params": {
+            "type": "object",
+            "description": "Partial node params to merge (same keys as creation)"
+          }
+        },
+        "required": [
+          "id",
+          "params"
+        ]
+      }
+    },
+    {
+      "name": "shape_edit_node",
+      "description": "Shape Studio: rename / show-hide / assign FDS SURF / set color / mark fire faces + fire properties of a node. fire_faces: 6 booleans in FDS SURF_ID6 order [-X,+X,-Y,+Y,-Z,+Z] OR face-name strings like [\"-Z\"] (\"bottom\"/\"top\" aliases ok); [] clears. Fire faces render as red hatching in the viewport and are wired to a FIRE SURF (+ RAMP_Q / &REAC) on shape_export_obst. Fire properties (merged individually, unspecified keys keep their previous value): fire_hrrpua, fire_tmp_front (°C), fire_ramp_points ([[t_seconds, fraction_0..1], ...] HRR time curve), fire_fuel_type, fire_soot_yield, fire_co_yield, fire_radiative_fraction, fire_ext_coeff. ONE FIRE OBST PER DOCUMENT: fire faces may exist on only one shape — assigning them to another node automatically clears the previous node's fire faces. PLAN FIRST: real FDS can only apply a fire SURF to a FLAT face (never a curved or stepped one), so setting fire_faces without plan_confirmed changes nothing (the fire_* properties in the same call are dropped too) and returns a 6-direction flatness analysis instead — discuss it with the user, agree on which flat face, HRRPUA, RAMP and combustion properties, then call again with plan_confirmed=true.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "surf_id": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "fire_faces": {
+            "type": "array",
+            "description": "[-X,+X,-Y,+Y,-Z,+Z] booleans or face names, [] to clear. Only ONE node per document may have fire faces (others are cleared automatically)"
+          },
+          "fire_hrrpua": {
+            "type": "number",
+            "description": "Fire face HRRPUA kW/m² (default 1000 at export)"
+          },
+          "fire_tmp_front": {
+            "type": "number",
+            "description": "SURF TMP_FRONT — ignition surface temperature (°C)"
+          },
+          "fire_ramp_points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "HRR time curve for RAMP_Q: [[t_seconds, fraction_0..1], ...]"
+          },
+          "fire_fuel_type": {
+            "type": "string",
+            "description": "Fuel PRESET id — WOOD_OAK, POLYURETHANE_FOAM, COTTON, NYLON, POLYPROPYLENE, PVC, PMMA, GASOLINE. Prefer a preset id: export then writes &REAC FUEL plus the matching C/H/O/N, soot/CO yield and radiative fraction. Any other string is passed through as a raw FUEL name with no chemistry."
+          },
+          "fire_soot_yield": {
+            "type": "number",
+            "description": "&REAC SOOT_YIELD"
+          },
+          "fire_co_yield": {
+            "type": "number",
+            "description": "&REAC CO_YIELD"
+          },
+          "fire_radiative_fraction": {
+            "type": "number",
+            "description": "&REAC RADIATIVE_FRACTION (default 0.35)"
+          },
+          "fire_ext_coeff": {
+            "type": "number",
+            "description": "SURF E_COEFFICIENT (extinction coefficient)"
+          },
+          "plan_confirmed": {
+            "type": "boolean",
+            "description": "Set true only AFTER the user agreed on the flat fire face and the fire properties (required to actually apply fire_faces and the fire_* properties sent with it)"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "shape_delete_node",
+      "description": "Shape Studio: delete a node. with_inputs (default true) also deletes its consumed input subtree.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "with_inputs": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "shape_undo",
+      "description": "Shape Studio: undo the last document mutation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "shape_import_mesh",
+      "description": "Shape Studio: import an STL or OBJ file as a mesh node (metres). y_up=true if the file is Y-up (converted to Z-up). For GLB/FBX use the Shape Studio UI import button.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute file path (.stl/.obj)"
+          },
+          "y_up": {
+            "type": "boolean"
+          },
+          "scale": {
+            "type": "number",
+            "description": "Uniform scale (e.g. 0.001 for mm files)"
+          },
+          "name": {
+            "type": "string"
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "surf_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "shape_export_obst",
+      "description": "Shape Studio → FDS: voxelize the shape (node_id, or union of all visible roots) and add it to the model as an obstacle with voxel geometry. voxel_size in m (e.g. 0.1). origin optionally repositions the bbox min corner in the domain.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "obstacle_id": {
+            "type": "string",
+            "description": "New obstacle ID"
+          },
+          "voxel_size": {
+            "type": "number",
+            "description": "Voxel edge (m), e.g. 0.1"
+          },
+          "node_id": {
+            "type": "string",
+            "description": "Node to export (default: union of visible roots)"
+          },
+          "origin": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Domain position of bbox min corner (default: keep authored coords)"
+          },
+          "surf_id": {
+            "type": "string",
+            "description": "SURF for all faces (default: node surf or INERT)"
+          }
+        },
+        "required": [
+          "obstacle_id",
+          "voxel_size"
+        ]
+      }
+    },
+    {
+      "name": "shape_export_geom",
+      "description": "Shape Studio → FDS cut-cell: export the exact CSG mesh as an &GEOM triangulated surface — no voxelization, so slopes and curves keep their true shape instead of being stair-stepped like shape_export_obst. Only a watertight surface is exported: primitives, hull, array, mirror and non-overlapping unions are fine, but an OVERLAPPING boolean (union/subtract/intersect) always leaves an open seam the CSG library cannot close, so the export is refused — voxelize those with shape_export_obst instead. Needs a GPU engine build with cut-cell support; older engines parse &GEOM but ignore it. Fire (HRRPUA) on a GEOM surface is not supported yet — use shape_export_obst for the burner. Units m, z-up. Default: every visible root, each keeping its own SURF; origin repositions the bbox min corner.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "geom_id": {
+            "type": "string",
+            "description": "New &GEOM ID (re-exporting with the same ID replaces it)"
+          },
+          "node_id": {
+            "type": "string",
+            "description": "Node to export (default: union of visible roots, per-node SURF kept)"
+          },
+          "surf_id": {
+            "type": "string",
+            "description": "SURF for all faces (default: per-node SURF, else FDS default surface)"
+          },
+          "origin": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Domain position of bbox min corner (default: keep authored coords)"
+          },
+          "rgb": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Display colour 0-255 (default: let Smokeview use the SURF colour)"
+          },
+          "transparency": {
+            "type": "number",
+            "description": "Display opacity 0-1"
+          },
+          "allow_open": {
+            "type": "boolean",
+            "description": "Write the &GEOM even when the surface has holes. Not recommended: FDS stops with ERROR(730) and the GPU cut-cell solver mis-classifies inside/outside"
+          }
+        },
+        "required": [
+          "geom_id"
+        ]
+      }
+    },
+    {
+      "name": "shape_export_stl",
+      "description": "Shape Studio → CFD (OpenFOAM etc.): export the exact CSG mesh as STL (no voxelization). ascii=true for text STL with solid name (snappyHexMesh patch name). Units m, z-up.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Output .stl absolute path"
+          },
+          "node_id": {
+            "type": "string"
+          },
+          "ascii": {
+            "type": "boolean"
+          },
+          "solid_name": {
+            "type": "string",
+            "description": "ASCII solid name (default: shape)"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "shape_export_obj",
+      "description": "Shape Studio → CFD: export the exact CSG mesh as OBJ (no voxelization). Units m, z-up.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Output .obj absolute path"
+          },
+          "node_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    {
+      "name": "shape_register_item",
+      "description": "Shape Studio: voxelize the shape and register it as a reusable library item (furniture/item catalog). It then appears in the Item panel and can be placed like any furniture. Optionally set FDS fire properties at the same time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Item display name"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "living_room",
+              "bedroom",
+              "kitchen",
+              "office",
+              "bathroom",
+              "fire_safety",
+              "hvac",
+              "doors_windows",
+              "lights",
+              "misc",
+              "user_item"
+            ],
+            "description": "Catalog category (default user_item)"
+          },
+          "voxel_size": {
+            "type": "number",
+            "description": "Voxel edge (m), e.g. 0.05"
+          },
+          "node_id": {
+            "type": "string",
+            "description": "Node to register (default: union of visible roots)"
+          },
+          "combustible": {
+            "type": "boolean",
+            "description": "Is the item combustible"
+          },
+          "hrrpua": {
+            "type": "number",
+            "description": "Fire HRRPUA (kW/m²) when burning"
+          },
+          "material": {
+            "type": "string",
+            "description": "Material description (e.g. wood, PU foam)"
+          },
+          "color": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Emoji icon (default 📦)"
+          }
+        },
+        "required": [
+          "name",
+          "voxel_size"
+        ]
+      }
+    },
+    {
+      "name": "shape_set_item_fds_props",
+      "description": "Item library: set FDS fire/material properties on a registered item (shown via the item panel's 'Library FDS Properties' button and applied when the item is placed). Sets a 'fire' preset override.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "description": "Item id (from shape_register_item or list)"
+          },
+          "hrrpua": {
+            "type": "number",
+            "description": "HRRPUA (kW/m²)"
+          },
+          "tmp_front": {
+            "type": "number",
+            "description": "Ignition surface temperature (°C, default 340)"
+          },
+          "fire_area": {
+            "type": "number",
+            "description": "Burning area (m²)"
+          },
+          "fuel_type": {
+            "type": "string",
+            "description": "Fuel label (e.g. WOOD_OAK, PU_FOAM)"
+          },
+          "spec_formula": {
+            "type": "string",
+            "description": "SPEC FORMULA (e.g. C6.3H7.1O2.1N1.0)"
+          },
+          "co_yield": {
+            "type": "number"
+          },
+          "soot_yield": {
+            "type": "number"
+          },
+          "hcn_yield": {
+            "type": "number"
+          },
+          "radiative_fraction": {
+            "type": "number"
+          },
+          "heat_of_combustion": {
+            "type": "number",
+            "description": "kJ/kg"
+          },
+          "ramp_points": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "HRR time curve [[t,frac],...] 0..1"
+          },
+          "ramp_id": {
+            "type": "string",
+            "description": "RAMP id (auto-generated when ramp_points given)"
+          },
+          "combustible": {
+            "type": "boolean"
+          },
+          "material": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id"
+        ]
+      }
+    },
+    {
+      "name": "shape_get_item_fds_props",
+      "description": "Item library: read the FDS properties and metadata of a registered item.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "item_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id"
+        ]
+      }
+    },
+    {
+      "name": "shape_screenshot",
+      "description": "Shape Studio: capture a screenshot of the running GUI (Shape Studio opens automatically) so you can visually REVIEW the shape you built. Returns a PNG file path — read the image, compare against reference photos, then fix with shape_set_params. select_node opens that node in the property panel first (e.g. to review fire faces / HRR chart). Live GUI mode only.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Output PNG path (default: temp folder)"
+          },
+          "select_node": {
+            "type": "string",
+            "description": "Node id to select before capture (shows its property panel)"
+          }
+        }
+      }
+    },
+    {
+      "name": "shape_preview_voxels",
+      "description": "Shape Studio: switch the viewport into FDS voxel preview mode — it shows exactly what the shape becomes once voxelized into FDS OBST boxes (including the fire faces). size = voxel edge in metres (default 0.1), off=true returns to the smooth CSG view. Call this before shape_screenshot to review the FDS result rather than the ideal mesh. GUI only (no effect headless).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "number",
+            "description": "Voxel edge (m), default 0.1"
+          },
+          "off": {
+            "type": "boolean",
+            "description": "true = leave preview mode"
+          }
+        }
+      }
+    }
+  ]
+}
