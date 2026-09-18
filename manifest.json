@@ -1,10 +1,10 @@
 {
   "manifest_version": "0.3",
   "name": "bulc-building-designer",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "display_name": "BULC Building Designer",
-  "description": "AI-powered building design automation for BULC fire simulation software. Create rooms, walls, and multi-story buildings with natural language.",
-  "long_description": "BULC Building Designer connects Claude Desktop to the BULC fire simulation software, enabling natural language building design. Simply describe what you want - 'Create a 5m x 4m living room' or 'Add a bedroom next to the kitchen' - and Claude will automatically create the building elements.\n\nFeatures:\n- Natural language room and wall creation\n- Multi-story building support\n- Spatial awareness (relative positioning)\n- Full undo/redo support\n- Works in English and Korean",
+  "description": "AI control of the BULC fire & evacuation simulator from Claude — geometry, Shape Studio, mesh, simulation settings, outputs, fire, detectors, sprinkler, HVAC and evacuation.",
+  "long_description": "BULC MCP Server connects Claude to the BULC desktop application and drives it in natural language: \"make a 8x6 m room\", \"split the mesh at x=4\", \"put a 500 kW/m2 fire in the middle\", \"set the ambient temperature to 25 C\", \"add a temperature slice at y=3\", \"check the deck and run it\".\n\nIt is a thin client of the bridge that BULC itself hosts on 127.0.0.1, and it runs the very same tool set the app's built-in AI assistant uses. Whatever the installed version of BULC can do, this server exposes:\n- Geometry: obstacles, walls, floors, doors, windows, holes, move/scale/rotate, furniture catalogue\n- Shape Studio: primitives, booleans, arrays, arches and vaults, voxel or &GEOM export, STL/OBJ\n- Mesh: single mesh, multi-mesh, slice/merge, shape-driven auto meshing, cut-cell meshing\n- Settings: end time, simulation mode, turbulence, numerics (CFL/VN/flux limiter), ambient conditions\n- Output: CHID, slices (SLCF), boundary quantities (BNDF), Plot3D, dump intervals, deck preview\n- Fire and materials, detectors and controls, sprinkler piping (SPR), HVAC ducting, evacuation (EVAC)\n- Pre-flight validation and starting the simulation\n\nRequires the BULC desktop application to be installed and running.",
   "author": {
     "name": "Meteor Simulation Inc.",
     "email": "support@meteor-simulation.com",
@@ -15,186 +15,266 @@
     "entry_point": "build/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/build/index.js"],
+      "args": [
+        "${__dirname}/build/index.js"
+      ],
       "env": {
-        "BULC_PORT": "19840"
+        "BULC_BRIDGE_PORT": "8787"
       }
     }
   },
   "compatibility": {
     "claude_desktop": ">=1.0.0",
-    "platforms": ["darwin", "win32"],
+    "platforms": [
+      "win32",
+      "darwin",
+      "linux"
+    ],
     "runtimes": {
-      "node": ">=16.0.0"
+      "node": ">=18.0.0"
     }
   },
   "tools": [
     {
-      "name": "bulc_get_spatial_context",
-      "description": "Get current layout of all rooms, walls, and levels with exact coordinates",
+      "name": "bulc_connection_status",
+      "description": "Check that the BULC app is running and reachable",
       "annotations": {
         "readOnlyHint": true,
         "destructiveHint": false
       }
     },
     {
-      "name": "bulc_get_home_info",
-      "description": "Get project information including file path, room count, wall count",
+      "name": "get_project_summary",
+      "description": "Summary of the project open in BULC (CHID, mesh, object counts)",
       "annotations": {
         "readOnlyHint": true,
         "destructiveHint": false
       }
     },
     {
-      "name": "bulc_list_rooms",
-      "description": "List all rooms with IDs, names, and dimensions",
+      "name": "get_config_summary",
+      "description": "Domain, mesh resolution, time and object counts of the current deck",
       "annotations": {
         "readOnlyHint": true,
         "destructiveHint": false
       }
     },
     {
-      "name": "bulc_list_walls",
-      "description": "List all walls with IDs, coordinates, and properties",
+      "name": "get_simulation_settings",
+      "description": "Time, simulation mode, turbulence, numerics, ambient and output settings",
       "annotations": {
         "readOnlyHint": true,
         "destructiveHint": false
       }
     },
     {
-      "name": "bulc_list_levels",
-      "description": "List all floor levels with names and elevations",
+      "name": "preview_fds",
+      "description": "Render the current project as FDS deck text without writing a file",
       "annotations": {
         "readOnlyHint": true,
         "destructiveHint": false
       }
     },
     {
-      "name": "bulc_create_room",
-      "description": "Create a rectangular room at specified position",
+      "name": "validate_project",
+      "description": "Pre-flight check of the deck before export or run",
       "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
+        "readOnlyHint": true,
+        "destructiveHint": false
       }
     },
     {
-      "name": "bulc_create_room_polygon",
-      "description": "Create a polygon-shaped room with custom vertices",
+      "name": "list_meshes",
+      "description": "List the &MESH deck with per-mesh size, cell count and self-check",
       "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
+        "readOnlyHint": true,
+        "destructiveHint": false
       }
     },
     {
-      "name": "bulc_create_wall",
-      "description": "Create a wall segment between two points",
+      "name": "list_obstacles",
+      "description": "List obstacles with IDs and bounding boxes",
       "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
+        "readOnlyHint": true,
+        "destructiveHint": false
       }
     },
     {
-      "name": "bulc_create_walls_rectangle",
-      "description": "Create 4 connected walls forming a rectangular enclosure",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
-      }
-    },
-    {
-      "name": "bulc_create_level",
-      "description": "Create a new floor level",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
-      }
-    },
-    {
-      "name": "bulc_modify_room",
-      "description": "Modify properties of an existing room",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
-      }
-    },
-    {
-      "name": "bulc_modify_wall",
-      "description": "Modify properties of an existing wall",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
-      }
-    },
-    {
-      "name": "bulc_delete_room",
-      "description": "Delete a room by ID",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
-      }
-    },
-    {
-      "name": "bulc_delete_wall",
-      "description": "Delete a wall by ID",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true
-      }
-    },
-    {
-      "name": "bulc_set_current_level",
-      "description": "Set the active floor level for editing",
+      "name": "add_obstacle",
+      "description": "Add a solid block (&OBST)",
       "annotations": {
         "readOnlyHint": false,
         "destructiveHint": false
       }
     },
     {
-      "name": "bulc_undo",
-      "description": "Undo the last operation",
+      "name": "add_wall",
+      "description": "Add a wall from start point to end point",
       "annotations": {
         "readOnlyHint": false,
-        "destructiveHint": true
+        "destructiveHint": false
       }
     },
     {
-      "name": "bulc_redo",
-      "description": "Redo the last undone operation",
+      "name": "add_door",
+      "description": "Cut a door opening in a wall",
       "annotations": {
         "readOnlyHint": false,
-        "destructiveHint": true
+        "destructiveHint": false
       }
     },
     {
-      "name": "bulc_save",
-      "description": "Save the current project",
+      "name": "add_window",
+      "description": "Cut a window opening in a wall",
       "annotations": {
         "readOnlyHint": false,
-        "destructiveHint": true
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "transform_obstacle",
+      "description": "Move, place, scale or rotate an existing obstacle",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "place_furniture",
+      "description": "Place a catalogue furniture item",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "set_mesh",
+      "description": "Set mesh resolution and domain extents",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "auto_multimesh",
+      "description": "Assign a multi-mesh deck automatically from the geometry",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "slice_mesh",
+      "description": "Split one mesh into two at a plane",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "set_time",
+      "description": "Set the simulation end time",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "set_numerics",
+      "description": "Set time step and advection stability controls",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "set_ambient",
+      "description": "Set ambient temperature, humidity and background CO2",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "add_fire",
+      "description": "Add a fire source with a given HRRPUA",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "add_slcf",
+      "description": "Add a slice output plane",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_dump_config",
+      "description": "Set output dump intervals",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "add_sprinkler",
+      "description": "Add a sprinkler head",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "evac_add_agents_batch",
+      "description": "Place a batch of evacuation agents",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "shape_add_arch",
+      "description": "Shape Studio: add an arched / vaulted ceiling",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "run_simulation",
+      "description": "Save the project and start the simulation",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
       }
     }
   ],
   "privacy_policies": [
-    "https://github.com/meteor-simulation/bulc-mcp-server/blob/main/PRIVACY_POLICY.md"
+    "https://github.com/using76/BULC_MCP/blob/main/PRIVACY_POLICY.md"
   ],
   "icon": "icon.png",
   "keywords": [
-    "building",
-    "architecture",
-    "CAD",
     "fire simulation",
     "FDS",
-    "design",
-    "floor plan",
-    "construction",
-    "BIM"
+    "CFD",
+    "evacuation",
+    "building",
+    "BIM",
+    "sprinkler",
+    "HVAC",
+    "smoke",
+    "mesh"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/meteor-simulation/bulc-mcp-server"
+    "url": "https://github.com/using76/BULC_MCP"
   },
   "homepage": "https://meteor-simulation.com/bulc",
-  "documentation": "https://github.com/meteor-simulation/bulc-mcp-server#readme",
-  "support": "https://github.com/meteor-simulation/bulc-mcp-server/issues"
+  "documentation": "https://github.com/using76/BULC_MCP#readme",
+  "support": "https://github.com/using76/BULC_MCP/issues",
+  "tools_generated": true
 }

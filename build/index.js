@@ -1,172 +1,81 @@
 #!/usr/bin/env node
-// BULC MCP Server - Main Entry Point
-// Connects Claude Desktop to BULC application for building design automation
-// Version 2.3 - Full feature set including FDS, Mesh, Simulation, Results, and EVAC with advanced features
+/**
+ * BULC MCP Server — AI control of the BULC fire & evacuation simulator.
+ *
+ * This server is a thin bridge client: every domain tool is executed by the running BULC desktop
+ * app through its local HTTP bridge, using the exact same tool registry the app's own AI assistant
+ * uses. That is deliberate — it means this server always offers the installed app's full feature
+ * set (geometry, Shape Studio, mesh, settings, output, fire, detectors, sprinkler, HVAC, EVAC,
+ * results) and never drifts out of sync with it.
+ *
+ * Previous versions (≤2.3) spoke a private TCP protocol to the legacy Java/SweetHome3D build of
+ * BULC and carried their own hand-written tool definitions; those tools no longer exist.
+ */
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
-// Import all tool modules
-import { roomTools, handleRoomTool } from "./tools/room.js";
-import { wallTools, handleWallTool } from "./tools/wall.js";
-import { contextTools, handleContextTool } from "./tools/context.js";
-import { furnitureTools, handleFurnitureTool } from "./tools/furniture.js";
-import { fdsDataTools, handleFdsDataTool } from "./tools/fds-data.js";
-import { meshTools, handleMeshTool } from "./tools/mesh.js";
-import { simulationTools, handleSimulationTool } from "./tools/simulation.js";
-import { fdsRunTools, handleFdsRunTool } from "./tools/fds-run.js";
-import { resultTools, handleResultTool } from "./tools/result.js";
-import { evacTools, handleEvacTool } from "./tools/evac.js";
-// Create server instance
-const server = new Server({
-    name: "bulc-mcp-server",
-    version: "2.3.0",
-}, {
-    capabilities: {
-        tools: {},
-    },
-});
-// Combine all tools
-const allTools = [
-    ...contextTools, // 8 tools: spatial context, home info, levels, undo/redo, save
-    ...roomTools, // 5 tools: create, create_polygon, list, modify, delete
-    ...wallTools, // 5 tools: create, create_rectangle, list, modify, delete
-    ...furnitureTools, // 5 tools: catalog, place, list, modify, delete
-    ...fdsDataTools, // 7 tools: get, fire_source, detector, sprinkler, hvac, thermocouple, clear
-    ...meshTools, // 5 tools: list, create, auto, modify, delete
-    ...simulationTools, // 4 tools: get_settings, time, output, ambient
-    ...fdsRunTools, // 6 tools: preview, validate, export, run, status, stop
-    ...resultTools, // 5 tools: open_viewer, list_datasets, point_data, aset, report
-    ...evacTools, // 25 tools: setup, stairs, agents, run, results, advanced features
-];
-// List available tools
+import { BulcNotRunningError, bridgeUrl, callTool, fetchSummary, health, startRun, } from "./bridge-client.js";
+import { loadCatalog, SNAPSHOT_TOOL_COUNT } from "./tool-catalog.js";
+const VERSION = "3.0.0";
+const server = new Server({ name: "bulc-mcp-server", version: VERSION }, { capabilities: { tools: {} } });
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-    return {
-        tools: allTools,
-    };
+    const catalog = await loadCatalog();
+    console.error(`[bulc-mcp] tools/list → ${catalog.tools.length} tools ` +
+        `(${catalog.live ? "live from BULC" : "bundled snapshot — BULC not running"})`);
+    return { tools: catalog.tools };
 });
-// Handle tool calls
+const text = (body, isError = false) => ({
+    content: [{ type: "text", text: body }],
+    ...(isError ? { isError: true } : {}),
+});
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const { name, arguments: args } = request.params;
-    const safeArgs = (args ?? {});
+    const { name } = request.params;
+    const args = (request.params.arguments ?? {});
     try {
-        // Route to appropriate handler based on tool name prefix/pattern
-        // Room tools
-        if (name.startsWith("bulc_") && name.includes("room")) {
-            return await handleRoomTool(name, safeArgs);
+        if (name === "bulc_connection_status") {
+            const h = await health();
+            if (!h?.ok) {
+                return text(`BULC 앱에 연결되지 않았습니다.\n` +
+                    `- 브리지 주소: ${bridgeUrl()}\n` +
+                    `- 조치: BULC 데스크톱 앱을 실행하세요. 포트를 바꿨다면 BULC_BRIDGE_PORT 를 맞춰 주세요.\n` +
+                    `- 지금은 내장 스냅샷 도구 목록(${SNAPSHOT_TOOL_COUNT}종)만 보여 주고 있으며, 실제 호출은 앱이 떠야 동작합니다.`);
+            }
+            return text(`BULC 앱 연결됨.\n- 브리지: ${bridgeUrl()}\n- 프로젝트 창: ${h.hasProject ? "있음" : "없음"}\n` +
+                `- 앱이 노출하는 도구: ${h.toolCount ?? "?"}종`);
         }
-        // Wall tools
-        if (name.startsWith("bulc_") && name.includes("wall")) {
-            return await handleWallTool(name, safeArgs);
+        if (name === "get_project_summary") {
+            return text(JSON.stringify(await fetchSummary(), null, 2));
         }
-        // Furniture tools
-        if (name.startsWith("bulc_") && name.includes("furniture")) {
-            return await handleFurnitureTool(name, safeArgs);
+        if (name === "run_simulation") {
+            const r = await startRun(args.folder_name, args.solver_type);
+            return text(`시뮬레이션을 시작했습니다.\n- 덱: ${r?.fdsPath ?? "(경로 없음)"}\n- 출력 폴더: ${r?.dir ?? "(폴더 없음)"}\n` +
+                "진행 상황은 BULC 창의 실행 대시보드에서 확인할 수 있습니다.");
         }
-        // FDS Data tools (fire source, detectors, sprinklers, HVAC, thermocouples)
-        if (name === "bulc_get_fds_data" ||
-            name === "bulc_set_fds_fire_source" ||
-            name === "bulc_set_fds_detector" ||
-            name === "bulc_set_fds_sprinkler" ||
-            name === "bulc_set_fds_hvac" ||
-            name === "bulc_set_fds_thermocouple" ||
-            name === "bulc_clear_fds_data") {
-            return await handleFdsDataTool(name, safeArgs);
-        }
-        // Mesh tools
-        if (name.startsWith("bulc_") && name.includes("mesh")) {
-            return await handleMeshTool(name, safeArgs);
-        }
-        // Simulation settings tools
-        if (name === "bulc_get_simulation_settings" ||
-            name === "bulc_set_simulation_time" ||
-            name === "bulc_set_output_settings" ||
-            name === "bulc_set_ambient") {
-            return await handleSimulationTool(name, safeArgs);
-        }
-        // FDS Run tools (preview, validate, export, run, status, stop)
-        if (name === "bulc_preview_fds" ||
-            name === "bulc_validate_fds" ||
-            name === "bulc_export_fds" ||
-            name === "bulc_run_fds" ||
-            name === "bulc_get_fds_status" ||
-            name === "bulc_stop_fds") {
-            return await handleFdsRunTool(name, safeArgs);
-        }
-        // Result viewing tools
-        if (name === "bulc_open_result_viewer" ||
-            name === "bulc_list_result_datasets" ||
-            name === "bulc_get_point_data" ||
-            name === "bulc_run_aset_analysis" ||
-            name === "bulc_generate_report") {
-            return await handleResultTool(name, safeArgs);
-        }
-        // EVAC tools
-        if (name.startsWith("bulc_") && name.includes("evac")) {
-            return await handleEvacTool(name, safeArgs);
-        }
-        // Also handle agent_properties, rset_report, exit_assignment, premovement, fire_coupling as EVAC tools
-        if (name === "bulc_set_agent_properties" ||
-            name === "bulc_generate_rset_report" ||
-            name === "bulc_save_evac_result" ||
-            name === "bulc_set_exit_assignment" ||
-            name === "bulc_set_premovement_time" ||
-            name === "bulc_set_fire_coupling") {
-            return await handleEvacTool(name, safeArgs);
-        }
-        // Context tools (get_spatial_context, get_home_info, levels, undo, redo, save)
-        if (name === "bulc_get_spatial_context" ||
-            name === "bulc_get_home_info" ||
-            name === "bulc_list_levels" ||
-            name === "bulc_create_level" ||
-            name === "bulc_set_current_level" ||
-            name === "bulc_undo" ||
-            name === "bulc_redo" ||
-            name === "bulc_save") {
-            return await handleContextTool(name, safeArgs);
-        }
-        // Unknown tool
-        return {
-            content: [
-                {
-                    type: "text",
-                    text: `Unknown tool: ${name}. Available tools: ${allTools.map((t) => t.name).join(", ")}`,
-                },
-            ],
-            isError: true,
-        };
+        // Everything else is executed by the app, which also validates the arguments against the
+        // tool's own schema and answers with a specific error when they are wrong.
+        const result = await callTool(name, args);
+        const action = result.action
+            ? `\n[action] ${result.action.type ?? ""}: ${result.action.summary ?? ""}`
+            : "";
+        return text(`${result.message ?? ""}${action}`);
     }
     catch (error) {
+        if (error instanceof BulcNotRunningError)
+            return text(error.message, true);
         const message = error instanceof Error ? error.message : String(error);
-        return {
-            content: [
-                {
-                    type: "text",
-                    text: `Error executing ${name}: ${message}`,
-                },
-            ],
-            isError: true,
-        };
+        return text(`Error executing ${name}: ${message}`, true);
     }
 });
-// Start server
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    // Log to stderr (stdout is used for MCP communication)
-    console.error("BULC MCP Server v2.3 started");
-    console.error(`Available tools: ${allTools.length}`);
-    console.error("Tool categories:");
-    console.error(`  - Context: ${contextTools.length} tools`);
-    console.error(`  - Room: ${roomTools.length} tools`);
-    console.error(`  - Wall: ${wallTools.length} tools`);
-    console.error(`  - Furniture: ${furnitureTools.length} tools`);
-    console.error(`  - FDS Data: ${fdsDataTools.length} tools`);
-    console.error(`  - Mesh: ${meshTools.length} tools`);
-    console.error(`  - Simulation: ${simulationTools.length} tools`);
-    console.error(`  - FDS Run: ${fdsRunTools.length} tools`);
-    console.error(`  - Results: ${resultTools.length} tools`);
-    console.error(`  - EVAC: ${evacTools.length} tools`);
-    console.error(`Connecting to BULC on port ${process.env.BULC_PORT || 19840}`);
+    // stdout carries the MCP protocol — every log line goes to stderr.
+    const h = await health();
+    console.error(`BULC MCP Server v${VERSION}`);
+    console.error(`Bridge: ${bridgeUrl()}`);
+    console.error(h?.ok
+        ? `BULC 앱 연결됨 — 도구 ${h.toolCount ?? "?"}종 (프로젝트 창 ${h.hasProject ? "있음" : "없음"})`
+        : `BULC 앱 미실행 — 내장 스냅샷 도구 ${SNAPSHOT_TOOL_COUNT}종을 목록으로 제공합니다. 앱을 실행하면 호출이 동작합니다.`);
 }
 main().catch((error) => {
     console.error("Failed to start BULC MCP Server:", error);
